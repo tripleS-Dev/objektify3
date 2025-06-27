@@ -3,6 +3,7 @@ import os
 
 import gradio as gr
 
+from generate.back.back import generate_back
 from generate.front import generate_front
 from config import season_color
 from PIL import PngImagePlugin, Image
@@ -64,6 +65,11 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
             "number": number,
             "alphabet": alphabet,
             "serial": serial if serial else None
+        },
+        "text_area": {
+            "class": "First",
+            "season": "Atom01",
+            "qr_code": "https://objektify.xyz"
         }
     }
 
@@ -77,4 +83,7 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     krtime = get_kr_time()
     img.save(f'./cache/objektify-{krtime}.png', pnginfo=meta)  # save to cache
 
-    return [img, gr.DownloadButton(value=f'./cache/objektify-{krtime}.png')]
+    img2 = generate_back(data)
+
+
+    return [[img, img2], gr.DownloadButton(value=f'./cache/objektify-{krtime}.png')]
