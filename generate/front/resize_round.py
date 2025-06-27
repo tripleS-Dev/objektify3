@@ -5,10 +5,8 @@ import numpy as np
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img: Image.Image):
-
-
-
+def resize_round(img):
+    img = img[0][0]
 
     blank_alpha = Image.open(f'{BASE_DIR}/blank_alpha.png')
     blank_alpha = blank_alpha.convert("RGBA")
@@ -35,4 +33,4 @@ def resize_round(img: Image.Image):
 
     # Create new image from the array
     new_img = Image.fromarray(img_array)
-    return new_img, new_img
+    return [new_img], new_img
