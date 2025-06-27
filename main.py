@@ -5,7 +5,7 @@ from html_elements import css, theme, animation
 
 
 with gr.Blocks(css=css, theme=theme, js=animation) as demo:
-    sidebar(False)
+    #sidebar(False)
 
     front(demo)
 
