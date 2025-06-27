@@ -1,0 +1,1 @@
+from .front import generate_by_language

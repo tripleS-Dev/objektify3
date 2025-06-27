@@ -1,0 +1,59 @@
+{
+  "name": "tripleS",
+  "official": true,
+  "side_logo": false,
+  "seasons": {
+    "Atom01": {
+      "First":   ["#FFDD00", "#000000"],
+      "Special": ["special.png", "#000000"]
+    },
+    "Binary01": {
+      "First":   ["#00FF00", "#000000"],
+      "Special": ["special.png", "#000000"]
+    },
+    "Cream01": {
+      "First":   ["#FF7477", "#000000"],
+      "Special": ["special.png", "#000000"]
+    },
+    "Divine01": {
+      "First":   ["#B301FE", "#000000"],
+      "Special": ["special.png", "#000000"]
+    },
+    "Ever01": {
+      "First":   ["#33ecfd", "#000000"],
+      "Special": ["special.png", "#000000"],
+      "premier": ["premier.png", "#000000"]
+    },
+    "Atom02": {
+      "First":   ["#ffdd01", "#000000"],
+      "Special": ["special.png", "#000000"],
+      "premier": ["premier.png", "#000000"]
+    }
+  },
+  "members": [
+    "SeoYeon",
+    "HyeRin",
+    "JiWoo",
+    "ChaeYeon",
+    "YooYeon",
+    "SooMin",
+    "NaKyoung",
+    "YuBin",
+    "Kaede",
+    "DaHyun",
+    "Kotone",
+    "YeonJi",
+    "Nien",
+    "SoHyun",
+    "Xinyu",
+    "Mayu",
+    "Lynn",
+    "JooBin",
+    "HaYeon",
+    "ShiOn",
+    "ChaeWon",
+    "Sullin",
+    "SeoAh",
+    "JiYeon"
+  ]
+}
