@@ -15,7 +15,7 @@ def add_message(history, message):
 
 from ai import generate_by_language
 
-def bot(history, response_type):
+def bot(history):
     print("bot :", str(history))
 
     text = generate_by_language(history)
@@ -37,29 +37,15 @@ def sidebar(open=False):
 
         chat_input = gr.MultimodalTextbox(
             interactive=True,
-            placeholder="Enter message or upload file...",
+            placeholder="Enter message",
             show_label=False,
-            file_types=["text"],
+            file_types=["image"],
         )
-        response_type = gr.Radio(
-            [
-                "image",
-                "text",
-                "gallery",
-                "video",
-                "audio",
-                "html",
-            ],
-            value="text",
-            label="Response Type",
-            visible=False,
-        )
+
         chat_msg = chat_input.submit(
             add_message, [chatbot, chat_input], [chatbot, chat_input]
         )
-        bot_msg = chat_msg.then(
-            bot, [chatbot, response_type], chatbot
-        )
-        bot_msg.then(lambda: gr.MultimodalTextbox(interactive=True), None, [chat_input])
+        bot_msg = chat_msg.then(fn=bot, inputs=chatbot, outputs=chatbot)
+        bot_msg.then(fn=lambda: gr.MultimodalTextbox(interactive=True), outputs=chat_input)
 
     return side
