@@ -7,12 +7,8 @@ from utils import get_kr_time
 
 def add_message(history, message):
     print("raw message : ", message)
-    krtime = get_kr_time()
-    if not message.get('files', []) == []:
-        resize_round(Image.open(message['files'][0]))[0].save(f'./cache/ai_inputs/objektify-{krtime}.png')
-        history.append({"role": "user", "content": {"path": f'./cache/ai_inputs/objektify-{krtime}.png'}})  # (role, content)
-    if not message.get('text', None) is None:
-        history.append({"role": "user", "content": message["text"]})  # (role, content)
+
+    history.append({"role": "user", "content": message["text"]})  # (role, content)
     print("raw history : "+str(history))
     return history, gr.MultimodalTextbox(value=None, interactive=False)
 
@@ -22,12 +18,9 @@ from ai import generate_by_language
 def bot(history, response_type):
     print("bot :", str(history))
 
-    text, success, img_name = generate_by_language(history)
-    if success:
-        history.append({"role": "assistant", "content": f"{img_name}",})
-    else:
-        history.append({"role": "assistant", "content": text.split("</think>")[1]})
-        #history.append({"role": "assistant", "content": text.split("</think>")[1]})
+    text = generate_by_language(history)
+
+    history.append({"role": "assistant", "content": text})
 
     print(history)
     return history
@@ -46,7 +39,7 @@ def sidebar(open=False):
             interactive=True,
             placeholder="Enter message or upload file...",
             show_label=False,
-            file_types=["image", "text"],
+            file_types=["text"],
         )
         response_type = gr.Radio(
             [
