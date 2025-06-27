@@ -21,6 +21,8 @@ def generate_back(json) -> Image.Image:
 
 
     text_draw(draw, (55, 471), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
+    text_draw(draw, (55, 471+216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'text_area.class', ''), get_json(json, 'appearance.text_color', '#000000'))
+    text_draw(draw, (55, 471+216+216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'text_area.season', ''), get_json(json, 'appearance.text_color', '#000000'))
 
     return backside
 
@@ -41,14 +43,19 @@ if __name__ == '__main__':
             "group": "tripleS"
         },
         "appearance": {
-            "background_color": "#FF00FF",
-            "text_color": "#000000",
+            "background_color": "#000",
+            "text_color": "#00FF00",
         },
         "identifiers": {
             "number": 100,
             "alphabet": None,
             "serial": 1
+        },
+        "text_area": {
+            "class": "First",
+            "season": "Atom01",
+            "qr_code": "https://objektify.xyz"
         }
     }
 
-    generate_back(data).save('fdd.png')
+    generate_back(data).show()
