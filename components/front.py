@@ -8,7 +8,7 @@ from utils import on_load, season_load, paste_correctly, class_load
 
 
 def front(demo):
-    with gr.Tab('front') as tab:
+    with gr.Tab('main') as tab:
         with gr.Group('hidden', visible=False):
             input_image_raw = gr.Image(type='pil', image_mode='RGBA')
             numbering_state = gr.Checkbox(value=False)
@@ -17,7 +17,9 @@ def front(demo):
 
         with gr.Row():
             with gr.Row(elem_classes='sticky-image'):
-                input_image = gr.Image(type='pil', image_mode='RGBA', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', sources='upload')
+                input_image = gr.Gallery(type='pil', interactive=True, show_download_button=False, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png','.jpg','.jpeg','.webp'], object_fit='contain')
+                #input_image = gr.Image(type='pil', image_mode='RGBA', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', sources='upload')
+
             input_image.upload(fn=resize_round, inputs=input_image, outputs=[input_image, input_image_raw])
 
             with gr.Column():
