@@ -22,12 +22,12 @@
     "Ever01": {
       "First":   ["#33ecfd", "#000000"],
       "Special": ["special.png", "#000000"],
-      "premier": ["premier.png", "#000000"]
+      "premier": ["premier.png", "#FFFFFF"]
     },
     "Atom02": {
       "First":   ["#ffdd01", "#000000"],
       "Special": ["special.png", "#000000"],
-      "premier": ["premier.png", "#000000"]
+      "premier": ["premier.png", "#FFFFFF"]
     }
   },
   "members": [
