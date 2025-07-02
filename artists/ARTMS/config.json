@@ -2,23 +2,25 @@
   "name": "ARTMS",
   "official": true,
   "side_logo": true,
+  "default": true,
+  "default_color": "#ebebeb",
   "seasons": {
     "Atom01": {
       "First":   ["#FFDD00", "#000000"],
-      "Special": ["special.png", "#000000"]
+      "Special": ["special", "#000000"]
     },
     "Binary01": {
       "First":   ["#00FF00", "#000000"],
-      "Special": ["special.png", "#000000"]
+      "Special": ["special", "#000000"]
     },
     "Cream01": {
       "First":   ["#FF7477", "#000000"],
-      "Special": ["special.png", "#000000"]
+      "Special": ["special", "#000000"]
     },
     "Divine01": {
       "First":   ["#B301FE", "#000000"],
-      "Special": ["special.png", "#000000"],
-      "Premier": ["premier.png", "#FFFFFF"]
+      "Special": ["special", "#000000"],
+      "Premier": ["premier", "#FFFFFF"]
     }
   },
   "members": [
