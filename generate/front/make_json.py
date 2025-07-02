@@ -8,16 +8,19 @@ from generate.front import generate_front
 from config import season_color
 from PIL import PngImagePlugin, Image
 
-from utils import get_kr_time
+from utils import get_kr_time, paste_correctly
 
 
 def make_json(input_image_raw, artist, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None):
+
+    if not artist:
+        return
+
+
     if not numbering_state:
         number = ''
         alphabet = ''
         serial = ''
-
-
 
 
 
@@ -32,11 +35,17 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     else:
         side_logo_img = None
 
-
+    if not input_image_raw:
+        if config.get('default', None):
+            input_image_path = os.path.join('./artists', artist, 'default.png')
+            input_image_raw = Image.open(input_image_path)
 
     background_color = config.get('seasons', {}).get(season, {}).get(class_, None)
     if not background_color:
-        background_color = '#FFFFFF'
+        if config.get('default_color', None):
+            background_color = config.get('default_color')
+        else:
+            background_color = '#FFFFFF'
     else:
         background_color = background_color[0]
 
@@ -47,10 +56,18 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         text_color = text_color[1]
 
     if not background_color.startswith('#'):
-        side_bar_img_path = os.path.join('./artists', artist, background_color)
+        side_bar_img_path = os.path.join('./artists', artist, background_color, 'front.png')
         side_bar_img = Image.open(side_bar_img_path)
+
+        back_img_path = os.path.join('./artists', artist, background_color, 'back.png')
+        back_img = Image.open(back_img_path)
+
     else:
         side_bar_img = None
+        back_img = None
+
+
+
 
     data = {
         "artist": {
@@ -74,16 +91,59 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     }
 
 
-    print(data)
+    #print(data)
+    krtime = get_kr_time()
+
+    img = front(krtime, input_image_raw, data, side_logo_img, side_bar_img)
+    img2 = back(krtime, data, back_img, side_logo_img)
+
+    combined = combine(krtime, img, img2)
+
+
+    return [[img, img2, combined], gr.DownloadButton(value=img)]
+
+
+
+def front(krtime, input_image_raw, data, side_logo_img, side_bar_img):
     img = generate_front(input_image_raw, data, side_logo_img, side_bar_img)
+    meta = PngImagePlugin.PngInfo()
+    meta.add_text('objektify', 'V3')
+    meta.add_text('side', 'front')
+    img.save(f'./cache/objektify-front-{krtime}.png', pnginfo=meta)  # save to cache
+    return f'./cache/objektify-front-{krtime}.png'
+
+
+def back(krtime, data, back_img, side_logo_img):
+    img = generate_back(data, back_img, side_logo_img)
+    meta = PngImagePlugin.PngInfo()
+    meta.add_text('objektify', 'V3')
+    meta.add_text('side', 'front')
+    img.save(f'./cache/objektify-back-{krtime}.png', pnginfo=meta)  # save to cache
+    return f'./cache/objektify-back-{krtime}.png'
+
+
+def combine(krtime, img, img2):
+
+    img = Image.open(img)
+    img2 = Image.open(img2)
+
+
+    combined_width = img2.size[0] + img.size[0]  # Horizontal concatenation
+    combined_height = max(img2.size[1], img.size[1])
+
+    combined = Image.new('RGBA', (combined_width, combined_height), (0, 0, 0, 0))
+
+    combined = paste_correctly(combined, (0, 0), img)
+    combined = paste_correctly(combined, (img.size[0], 0), img2)
 
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
     meta.add_text('side', 'front')
-    krtime = get_kr_time()
-    img.save(f'./cache/objektify-{krtime}.png', pnginfo=meta)  # save to cache
-
-    img2 = generate_back(data)
+    combined.save(f'./cache/objektify-combined-{krtime}.png', pnginfo=meta)  # save to cache
+    return f'./cache/objektify-combined-{krtime}.png'
 
 
-    return [[img, img2], gr.DownloadButton(value=f'./cache/objektify-{krtime}.png')]
+
+
+
+
