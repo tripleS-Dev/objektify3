@@ -2,11 +2,23 @@ from PIL import Image, ImageOps
 from pathlib import Path
 import numpy as np
 
+from generate.front.make_json import make_json  # Corrected import
+
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img):
+def resize_round(img, input_image_raw=None, artist=None, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None):
     img = img[0][0]
+
+
+
+    img = Image.open(img)
+
+    try:
+        img = ImageOps.exif_transpose(img) #https://github.com/python-pillow/Pillow/issues/4703
+    except ZeroDivisionError:
+        img = img.rotate(270, expand=True) #There is an issue with vertically taken photos in the Kiwi Browser on Android, so I manually rotate them.
+
 
     blank_alpha = Image.open(f'{BASE_DIR}/blank_alpha.png')
     blank_alpha = blank_alpha.convert("RGBA")
@@ -33,4 +45,12 @@ def resize_round(img):
 
     # Create new image from the array
     new_img = Image.fromarray(img_array)
-    return [new_img], new_img
+
+
+
+    if artist:
+        a = make_json(new_img, artist, season, class_, member, number, alphabet, serial)
+        img_card, download_btn = a[0], a[1]
+        return img_card, new_img, download_btn
+    else:
+        return [new_img], new_img, None
