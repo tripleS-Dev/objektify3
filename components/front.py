@@ -17,10 +17,9 @@ def front(demo):
 
         with gr.Row():
             with gr.Row(elem_classes='sticky-image'):
-                input_image = gr.Gallery(type='pil', interactive=True, show_download_button=False, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png','.jpg','.jpeg','.webp'], object_fit='contain')
+                input_image = gr.Gallery(type='filepath', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png','.jpg','.jpeg','.webp'], object_fit='contain', height='100%')
                 #input_image = gr.Image(type='pil', image_mode='RGBA', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', sources='upload')
 
-            input_image.upload(fn=resize_round, inputs=input_image, outputs=[input_image, input_image_raw])
 
             with gr.Column():
                 artist = gr.Radio(label='Artist', choices=None, interactive=True)
@@ -38,10 +37,12 @@ def front(demo):
 
                     #number.input(fn=lambda x: x if x.isdigit() or x == '' else '100', inputs=number, outputs=number)
 
-
-                with gr.Row():
-                    #btn = gr.Button(value='Make', variant="primary")
-                    download_btn = gr.DownloadButton(label='Download', variant="primary")
+                with gr.Group():
+                    with gr.Column():
+                        #btn = gr.Button(value='Make', variant="primary")
+                        download_btn = gr.DownloadButton(label='Download', variant="primary")
+                        share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
+                        #gr.CheckboxGroup(choices=['Front','back','sum'], label='')
 
     all_components = [input_image_raw, artist, season, classes, member, numbering_state, number, alphabet, serial]
 
@@ -53,6 +54,10 @@ def front(demo):
             else:
                 component.input(fn=lambda x, y: make_json(x, y)+[False], inputs=[input_image_raw, artist], outputs=[input_image, download_btn, numbering_state])
 
+
+    #input_image_raw.change(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
+    input_image.upload(fn=resize_round, inputs=[input_image]+all_components, outputs=[input_image, input_image_raw, share_btn])
+    input_image.preview_open(fn=lambda x: print(x), inputs=input_image)
 
     numbering.expand(fn=lambda a, b, c, d, e, f, g, h, i: make_json(a, b, c, d, e, f, g, h, i)+[True], inputs=all_components[:5]+[true]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
     numbering.collapse(fn=lambda a, b, c, d, e, f, g, h, i: make_json(a, b, c, d, e, f, g, h, i)+[False], inputs=all_components[:5]+[false]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
