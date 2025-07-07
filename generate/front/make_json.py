@@ -11,7 +11,7 @@ from PIL import PngImagePlugin, Image
 from utils import get_kr_time, paste_correctly
 
 
-def make_json(input_image_raw, artist, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None):
+def make_json(input_image_raw, artist, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None, qrcoding_state=None, qr_code=None):
 
     if not artist:
         return
@@ -22,7 +22,8 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         alphabet = ''
         serial = ''
 
-
+    if not qrcoding_state:
+        qr_code = 'https://objektify.xyz/'
 
 
     config_path = os.path.join('./artists', artist, 'config.json')
@@ -67,8 +68,6 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         back_img = None
 
 
-
-
     data = {
         "artist": {
             "name": member,
@@ -86,7 +85,7 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         "text_area": {
             "class": "First",
             "season": "Atom01",
-            "qr_code": "https://objektify.xyz"
+            "qr_code": qr_code
         }
     }
 

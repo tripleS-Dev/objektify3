@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 from pathlib import Path
 
-from utils import color_change, get_json, paste_correctly, text_draw
+from utils import color_change, get_json, paste_correctly, text_draw, qr_image
 
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources/'
 
@@ -38,21 +38,38 @@ def generate_back(json, back_img=None, side_logo=None, top_logo=None) -> Image.I
 
 
     sidebar = Image.open(BASE_DIR + 'sidebar.png')
+    draw_sidebar = ImageDraw.Draw(sidebar)
+
+    text_draw(draw_sidebar, (49, 51), 'Helvetica_Neue_LT_Std_75_Bold.otf', 56, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
+
+
 
     if side_logo:
         side_logo = color_change(side_logo, get_json(json, 'appearance.text_color', '#000000'))
         sidebar = paste_correctly(sidebar, (1478 - 55 - side_logo.size[0], 37), side_logo)
+        draw_sidebar = ImageDraw.Draw(sidebar)
 
     else:
-        draw = ImageDraw.Draw(sidebar)
-        text_draw(draw, (1426, 45), 'Helvetica_Neue_LT_Std_75_Bold.otf', 58, get_json(json, 'artist.group', ''),
-                  get_json(json, 'appearance.text_color', '#000000'), pos=2)
+        text_draw(draw_sidebar, (1426, 45), 'Helvetica_Neue_LT_Std_75_Bold.otf', 58, get_json(json, 'artist.group', ''),  get_json(json, 'appearance.text_color', '#000000'), pos=2)
+
+
+    if get_json(json, 'identifiers.number', None) and get_json(json, 'identifiers.serial', None):
+
+        text_draw(draw_sidebar, (662+4, 31), 'Inter-Bold-5.ttf', 54, str(get_json(json, 'identifiers.number', ''))+str(get_json(json, 'identifiers.alphabet', '')), get_json(json, 'appearance.text_color', '#000000'), pos=2)
+        text_draw(draw_sidebar, (682, 44), 'MatrixSSK_custom.ttf', 60, '#'+str(get_json(json, 'identifiers.serial', '')).zfill(6), get_json(json, 'appearance.text_color', '#000000'), pos=0)
+
+    if get_json(json, 'identifiers.number', None) and not get_json(json, 'identifiers.serial', None):
+        text_draw(draw_sidebar, (sidebar.size[0]/2, sidebar.size[1]/2 - 14), 'Inter-Bold-5.ttf', 56, str(get_json(json, 'identifiers.number', ''))+str(get_json(json, 'identifiers.alphabet', '')), get_json(json, 'appearance.text_color', '#000000'), pos=1)
+
+
+
 
     sidebar = sidebar.rotate(270, expand=True)
     backside = paste_correctly(backside, (865, 98), sidebar)
 
-
-
+    if get_json(json, 'text_area.qr_code', None):
+        qr_code = qr_image(get_json(json, 'text_area.qr_code', None))
+        backside = paste_correctly(backside, (514, 1020), qr_code)
 
     return backside
 

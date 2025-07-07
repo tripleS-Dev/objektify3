@@ -13,7 +13,7 @@ def season_load(artist_name):
     members = config.get('members', [])
 
 
-    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.Accordion(open=False, visible=False), '', '', ''
+    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.Accordion(open=False, visible=False), '', '', '', gr.Accordion(open=False, visible=False)
 
 
 def class_load(artist_name, season, classes):

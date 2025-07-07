@@ -12,6 +12,7 @@ def front(demo):
         with gr.Group('hidden', visible=False):
             input_image_raw = gr.Image(type='pil', image_mode='RGBA')
             numbering_state = gr.Checkbox(value=False)
+            qrcoding_state = gr.Checkbox(value=False)
             true = gr.Checkbox(value=True)
             false = gr.Checkbox(value=False)
 
@@ -33,7 +34,9 @@ def front(demo):
                         alphabet = gr.Textbox(label='Alphabet', value='', interactive=True)
                         serial = gr.Textbox(label='Serial', value='', interactive=True)
 
-
+                with gr.Accordion(visible=False, open=False, label='QR code (expand to edit)') as qrcoding:
+                    with gr.Row():
+                        qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True)
 
                     #number.input(fn=lambda x: x if x.isdigit() or x == '' else '100', inputs=number, outputs=number)
 
@@ -44,7 +47,7 @@ def front(demo):
                         share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
                         #gr.CheckboxGroup(choices=['Front','back','sum'], label='')
 
-    all_components = [input_image_raw, artist, season, classes, member, numbering_state, number, alphabet, serial]
+    all_components = [input_image_raw, artist, season, classes, member, numbering_state, number, alphabet, serial, qrcoding_state, qr_code]
 
     if not any(component == '' for component in [input_image_raw, artist]):
         for component in all_components:
@@ -52,25 +55,29 @@ def front(demo):
                 component.input(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
 
             else:
-                component.input(fn=lambda x, y: make_json(x, y)+[False], inputs=[input_image_raw, artist], outputs=[input_image, download_btn, numbering_state])
+                component.input(fn=lambda x, y: make_json(x, y)+[False, False], inputs=[input_image_raw, artist], outputs=[input_image, download_btn, numbering_state, qrcoding_state])
 
 
     #input_image_raw.change(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
     input_image.upload(fn=resize_round, inputs=[input_image]+all_components, outputs=[input_image, input_image_raw, share_btn])
     input_image.preview_open(fn=lambda x: print(x), inputs=input_image)
 
-    numbering.expand(fn=lambda a, b, c, d, e, f, g, h, i: make_json(a, b, c, d, e, f, g, h, i)+[True], inputs=all_components[:5]+[true]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
-    numbering.collapse(fn=lambda a, b, c, d, e, f, g, h, i: make_json(a, b, c, d, e, f, g, h, i)+[False], inputs=all_components[:5]+[false]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
+    numbering.expand(fn=lambda a, b, c, d, e, f, g, h, i, j ,k: make_json(a, b, c, d, e, f, g, h, i, j ,k)+[True], inputs=all_components[:5]+[true]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
+    numbering.collapse(fn=lambda a, b, c, d, e, f, g, h, i, j ,k: make_json(a, b, c, d, e, f, g, h, i, j ,k)+[False], inputs=all_components[:5]+[false]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
+
+    qrcoding.expand(fn=lambda a, b, c, d, e, f, g, h, i, j ,k: make_json(a, b, c, d, e, f, g, h, i, j ,k) + [True], inputs=all_components[:9] + [true] + all_components[10:], outputs=[input_image, download_btn, qrcoding_state])
+    qrcoding.collapse(fn=lambda a, b, c, d, e, f, g, h, i, j ,k: make_json(a, b, c, d, e, f, g, h, i, j ,k) + [False], inputs=all_components[:9] + [false] + all_components[10:], outputs=[input_image, download_btn, qrcoding_state])
+
     #numbering_state.change(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
 
     #btn.click(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
 
 
 
-    artist.change(fn=season_load, inputs=artist, outputs=[season, classes, member, numbering, number, alphabet, serial])
+    artist.change(fn=season_load, inputs=artist, outputs=[season, classes, member, numbering, number, alphabet, serial, qrcoding])
     season.change(fn=class_load, inputs=[artist, season, classes],outputs=[classes])
     classes.input(fn=lambda : (gr.Dropdown(visible=True)), outputs=[member])
-    member.input(fn=lambda : (gr.Group(visible=True), '100', 'Z', '1'), outputs=[numbering, number, alphabet, serial])
+    member.input(fn=lambda : (gr.Group(visible=True), '100', 'Z', '1', gr.Group(visible=True)), outputs=[numbering, number, alphabet, serial, qrcoding])
 
 
     demo.load(fn=on_load, outputs=artist)
