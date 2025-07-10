@@ -2,6 +2,7 @@
   "name": "ARTMS",
   "official": true,
   "side_logo": true,
+  "top_logo": true,
   "default": true,
   "default_color": "#ebebeb",
   "seasons": {
@@ -23,11 +24,11 @@
       "Premier": ["premier", "#FFFFFF"]
     }
   },
-  "members": [
-    "HeeJin",
-    "KimLip",
-    "JinSoul",
-    "Choerry",
-    "HaSeul"
-  ]
+  "members": {
+     "HeeJin":  {"sign": true, "position": [35, 1070]},
+     "KimLip":  {"sign": true, "position": [57, 1025]},
+     "JinSoul": {"sign": true, "position": [48, 1037]},
+     "Choerry": {"sign": true, "position": [43, 953]},
+     "HaSeul":  {"sign": true, "position": [58, 1054]}
+ }
 }

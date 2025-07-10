@@ -59,7 +59,7 @@ def front(demo):
 
     #input_image_raw.change(fn=make_json, inputs=all_components, outputs=[input_image, download_btn])
     input_image.upload(fn=resize_round, inputs=[input_image]+all_components, outputs=[input_image, input_image_raw, share_btn])
-    input_image.preview_open(fn=lambda x: print(x), inputs=input_image)
+    #input_image.preview_open(fn=lambda x: print(x), inputs=input_image)
 
     numbering.expand(fn=lambda a, b, c, d, e, f, g, h, i, j: make_json(a, b, c, d, e, f, g, h, i, j)+[True], inputs=all_components[:5]+[true]+all_components[6:], outputs=[input_image, download_btn, numbering_state])
     numbering.collapse(fn=lambda a, b, c, d, e, f, g, h, i, j: make_json(a, b, c, d, e, f, g, h, i, j)+[False], inputs=all_components[:5]+[false]+all_components[6:], outputs=[input_image, download_btn, numbering_state])

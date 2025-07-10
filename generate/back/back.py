@@ -5,7 +5,7 @@ from utils import color_change, get_json, paste_correctly, text_draw, qr_image
 
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources/'
 
-def generate_back(json, back_img=None, side_logo=None, top_logo=None) -> Image.Image:
+def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_img=None, sign_position=None) -> Image.Image:
 
     backside, layout, inside = open_images()
 
@@ -17,10 +17,6 @@ def generate_back(json, back_img=None, side_logo=None, top_logo=None) -> Image.I
 
 
     layout = color_change(layout, get_json(json, 'appearance.text_color', '#000000'))
-
-    if top_logo:
-        top_logo = color_change(top_logo, get_json(json, 'appearance.text_color', '#000000'))
-        backside = paste_correctly(backside, (57, 151), top_logo)
 
 
     backside = paste_correctly(backside, (0,0), inside)
@@ -41,6 +37,18 @@ def generate_back(json, back_img=None, side_logo=None, top_logo=None) -> Image.I
     draw_sidebar = ImageDraw.Draw(sidebar)
 
     text_draw(draw_sidebar, (49, 51), 'Helvetica_Neue_LT_Std_75_Bold.otf', 56, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
+
+
+    if top_logo_img:
+        top_logo = color_change(top_logo_img, get_json(json, 'appearance.text_color', '#000000'))
+        backside = paste_correctly(backside, (57, 151), top_logo)
+
+
+    if sign_img:
+        print(sign_position)
+        sign_img = color_change(sign_img, get_json(json, 'appearance.text_color', '#000000'))
+        backside = paste_correctly(backside, sign_position if sign_position else (59, 1020), sign_img)
+
 
 
 
