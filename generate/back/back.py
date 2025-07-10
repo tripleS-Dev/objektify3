@@ -45,7 +45,6 @@ def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_i
 
 
     if sign_img:
-        print(sign_position)
         sign_img = color_change(sign_img, get_json(json, 'appearance.text_color', '#000000'))
         backside = paste_correctly(backside, sign_position if sign_position else (59, 1020), sign_img)
 
