@@ -7,44 +7,39 @@ from generate.front import resize_round, make_json
 from utils import on_load, season_load, paste_correctly, class_load
 
 
-def front(demo):
+def front(demo, input_image_raw, input_image):
     with gr.Tab('main') as tab:
         with gr.Group('hidden', visible=False):
-            input_image_raw = gr.Image(type='pil', image_mode='RGBA')
             numbering_state = gr.Checkbox(value=False)
             true = gr.Checkbox(value=True)
             false = gr.Checkbox(value=False)
 
-        with gr.Row():
-            with gr.Row(elem_classes='sticky-image'):
-                input_image = gr.Gallery(type='filepath', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png','.jpg','.jpeg','.webp'], object_fit='contain', height='100%')
-                #input_image = gr.Image(type='pil', image_mode='RGBA', interactive=True, show_download_button=True, show_fullscreen_button=True, format='png', show_label=False, elem_classes='sticky-image', sources='upload')
 
 
-            with gr.Column():
-                artist = gr.Radio(label='Artist', choices=None, interactive=True)
-                season = gr.Radio(label='Season', choices=None, interactive=True, visible=False)
-                classes = gr.Radio(label='Class', choices=None, interactive=True, visible=False)
-                member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=False, allow_custom_value=True)
+        with gr.Column():
+            artist = gr.Radio(label='Artist', choices=None, interactive=True)
+            season = gr.Radio(label='Season', choices=None, interactive=True, visible=False)
+            classes = gr.Radio(label='Class', choices=None, interactive=True, visible=False)
+            member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=False, allow_custom_value=True)
 
-                with gr.Accordion(visible=False, open=False, label='Numbering (expand to enable)') as numbering:
-                    with gr.Row():
-                        number = gr.Textbox(label='Number', value='', interactive=True)
-                        alphabet = gr.Textbox(label='Alphabet', value='', interactive=True)
-                        serial = gr.Textbox(label='Serial', value='', interactive=True)
+            with gr.Accordion(visible=False, open=False, label='Numbering (expand to enable)') as numbering:
+                with gr.Row():
+                    number = gr.Textbox(label='Number', value='', interactive=True)
+                    alphabet = gr.Textbox(label='Alphabet', value='', interactive=True)
+                    serial = gr.Textbox(label='Serial', value='', interactive=True)
 
-                with gr.Accordion(visible=False, open=False, label='QR code') as qrcoding:
-                    with gr.Row():
-                        qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True)
+            with gr.Accordion(visible=False, open=False, label='QR code') as qrcoding:
+                with gr.Row():
+                    qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True)
 
-                    #number.input(fn=lambda x: x if x.isdigit() or x == '' else '100', inputs=number, outputs=number)
+                #number.input(fn=lambda x: x if x.isdigit() or x == '' else '100', inputs=number, outputs=number)
 
-                with gr.Group():
-                    with gr.Column():
-                        #btn = gr.Button(value='Make', variant="primary")
-                        download_btn = gr.DownloadButton(label='Download', variant="primary")
-                        share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
-                        #gr.CheckboxGroup(choices=['Front','back','sum'], label='')
+            with gr.Group():
+                with gr.Column():
+                    #btn = gr.Button(value='Make', variant="primary")
+                    download_btn = gr.DownloadButton(label='Download', variant="primary")
+                    share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
+                    #gr.CheckboxGroup(choices=['Front','back','sum'], label='')
 
     all_components = [input_image_raw, artist, season, classes, member, numbering_state, number, alphabet, serial, qr_code]
 
