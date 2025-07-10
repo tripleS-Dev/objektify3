@@ -13,7 +13,7 @@ def season_load(artist_name):
     members = config.get('members', []).keys()
 
 
-    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.Accordion(open=False, visible=False), '', '', '', gr.Accordion(open=False, visible=False)
+    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.Accordion(open=False, visible=False), '', '', '', gr.Accordion(open=False, visible=False), gr.Textbox(value='https://objektify.xyz/')
 
 
 def class_load(artist_name, season, classes):

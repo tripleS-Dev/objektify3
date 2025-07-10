@@ -66,7 +66,7 @@ def front(demo, input_image_raw, input_image):
 
 
 
-    artist.change(fn=season_load, inputs=artist, outputs=[season, classes, member, numbering, number, alphabet, serial, qrcoding])
+    artist.change(fn=season_load, inputs=artist, outputs=[season, classes, member, numbering, number, alphabet, serial, qrcoding, qr_code])
     season.change(fn=class_load, inputs=[artist, season, classes],outputs=[classes])
     classes.input(fn=lambda : (gr.Dropdown(visible=True)), outputs=[member])
     member.input(fn=lambda : (gr.Group(visible=True), '100', 'Z', '1', gr.Group(visible=True)), outputs=[numbering, number, alphabet, serial, qrcoding])

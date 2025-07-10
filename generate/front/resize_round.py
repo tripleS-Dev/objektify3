@@ -7,10 +7,8 @@ from generate.front.make_json import make_json  # Corrected import
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img, input_image_raw=None, artist=None, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None, qrcoding_state=None, qr_code=None):
+def resize_round(img, input_image_raw=None, artist=None, season = None, class_ = None, member = None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
     img = img[0][0]
-
-
 
     img = Image.open(img)
 
@@ -49,7 +47,7 @@ def resize_round(img, input_image_raw=None, artist=None, season=None, class_=Non
 
 
     if artist:
-        a = make_json(new_img, artist, season, class_, member, number, alphabet, serial, qrcoding_state, qr_code)
+        a = make_json(new_img, artist, season, class_, member, numbering_state, number, alphabet, serial, qr_code)
         img_card, download_btn = a[0], a[1]
         return img_card, new_img, download_btn
     else:
