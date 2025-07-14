@@ -7,8 +7,8 @@ from generate.front import resize_round, make_json
 from utils import on_load, season_load, paste_correctly, class_load
 
 
-def front(demo, input_image_raw, input_image):
-    with gr.Tab('main') as tab:
+def front(demo, input_image_raw, input_image, difficult):
+    with gr.Tab('Simple', id=0) as simple:
         with gr.Group('hidden', visible=False):
             numbering_state = gr.Checkbox(value=False)
             true = gr.Checkbox(value=True)
@@ -37,8 +37,11 @@ def front(demo, input_image_raw, input_image):
             with gr.Group():
                 with gr.Column():
                     #btn = gr.Button(value='Make', variant="primary")
-                    download_btn = gr.DownloadButton(label='Download', variant="primary")
+                    download_btn = gr.DownloadButton(label='Download', variant="primary", visible=False)
                     share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
+
+                    go_advanced = gr.Button(value='Go to Advanced', variant="primary", visible=True)
+                    go_advanced.click(fn=lambda : gr.Tabs(selected=1), inputs=None, outputs=difficult)
                     #gr.CheckboxGroup(choices=['Front','back','sum'], label='')
 
     all_components = [input_image_raw, artist, season, classes, member, numbering_state, number, alphabet, serial, qr_code]
@@ -74,4 +77,4 @@ def front(demo, input_image_raw, input_image):
 
     demo.load(fn=on_load, outputs=artist)
 
-    return tab
+    return simple
