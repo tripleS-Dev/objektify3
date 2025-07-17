@@ -9,3 +9,4 @@ from .season_load import class_load
 from .get_kr_time import get_kr_time
 from .get_json import get_json
 from .qr_image import qr_image
+from .simple2advanced import simple2advanced

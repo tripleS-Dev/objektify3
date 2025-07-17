@@ -44,11 +44,11 @@ def resize_round(img, input_image_raw=None, artist=None, season = None, class_ =
     # Create new image from the array
     new_img = Image.fromarray(img_array)
 
-
+    blank = [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
 
     if artist:
         a = make_json(new_img, artist, season, class_, member, numbering_state, number, alphabet, serial, qr_code)
         img_card, download_btn = a[0], a[1]
-        return img_card, new_img, download_btn
+        return [img_card, new_img, None]+ a[2:]
     else:
-        return [new_img], new_img, None
+        return [[new_img], new_img, None]+ blank

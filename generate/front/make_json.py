@@ -7,7 +7,7 @@ from generate.back.back import generate_back
 from generate.front import generate_front
 from PIL import PngImagePlugin, Image
 
-from utils import get_kr_time, paste_correctly, get_json
+from utils import get_kr_time, paste_correctly, get_json, simple2advanced
 
 
 def make_json(input_image_raw, artist, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
@@ -52,7 +52,7 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
             sign_position = (x, y)
     else:
         sign_img = None
-        sign_position = None
+        sign_position = (0,0)
 
     if get_json(config, f'top_logo', False):
         top_logo_path = os.path.join('./artists', artist, f'top_logo.png')
@@ -117,8 +117,10 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
 
     combined = combine(krtime, img, img2)
 
+    advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1])
 
-    return [[img, img2, combined], gr.DownloadButton(value=img)]
+
+    return [[img, img2, combined], gr.DownloadButton(value=img)] + advanced_components
 
 
 
