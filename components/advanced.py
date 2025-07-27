@@ -7,14 +7,14 @@ def advanced():
             pass
 
         with gr.Column():
-            with gr.Group():
+            with gr.Accordion(label='Colors', open=False):
                 with gr.Row(equal_height=True):
                     main_color = gr.ColorPicker(interactive=True, label='Main Color', value='#FFFFFF')
                     text_color = gr.ColorPicker(interactive=True, label='Text Color', value='#000000')
 
 
 
-            with gr.Group():
+            with gr.Accordion(label='Texts', open=False):
                 with gr.Row():
                     name = gr.Text(interactive=True, label='Name')
                     group_text = gr.Text(interactive=True, label='Group')
@@ -26,13 +26,13 @@ def advanced():
                     season = gr.Text(interactive=True, label='Season')
                     season_outline = gr.Text(interactive=True, label='Season outline')
 
-            with gr.Group():
+            with gr.Accordion(label='Numbering', open=False):
                 with gr.Row():
                     number = gr.Textbox(interactive=True, label='Number', value='')
                     alphabet = gr.Textbox(interactive=True, label='Alphabet', value='')
                     serial = gr.Textbox(interactive=True, label='Serial', value='')
 
-            with gr.Group():
+            with gr.Accordion(label='Sign', open=False):
                 with gr.Row(equal_height=True):
                     sign = gr.Image(interactive=True, label='Sign', sources='upload')
 
@@ -44,7 +44,7 @@ def advanced():
 
 
 
-            with gr.Group():
+            with gr.Accordion(label='QR Code', open=False):
                 qr_code = gr.Text(interactive=True, label='QR Code')
 
                 qr_logo = gr.Image(interactive=True, label='QR Logo', sources='upload')

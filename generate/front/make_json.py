@@ -87,6 +87,9 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         side_bar_img = None
         back_img = None
 
+    season_text = config.get('seasons', {}).get(season, {}).get('display', season)
+
+
 
     data = {
         "artist": {
@@ -104,7 +107,7 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         },
         "text_area": {
             "class": class_,
-            "season": season,
+            "season": season_text,
             "qr_code": qr_code
         }
     }

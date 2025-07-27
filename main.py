@@ -24,7 +24,7 @@ with gr.Blocks(css=css, theme=theme, js=animation) as demo:
 
 
     events.front(input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult)
-
+    events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
 
 demo.launch(server_name='0.0.0.0', ssr_mode=True)

@@ -15,8 +15,13 @@ def simple2advanced(data, sign=None, sign_position_x=None, sign_position_y=None)
     group_text = get_json(data, f'artist.group', '')
 
     class_ = get_json(data, f'text_area.class', '')
+
     season = get_json(data, f'text_area.season', '')
-    season_outline = None
+    if '/' in season:
+        season = get_json(data, f'text_area.season', '').split('/')[0]
+        season_outline = get_json(data, f'text_area.season', '').split('/')[1]
+    else:
+        season_outline = ''
 
     number = get_json(data, f'identifiers.number', '')
     alphabet = get_json(data, f'identifiers.alphabet', '')

@@ -29,7 +29,18 @@ def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_i
 
     text_draw(draw, (55, 471), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
     text_draw(draw, (55, 471+216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'text_area.class', ''), get_json(json, 'appearance.text_color', '#000000'))
-    text_draw(draw, (55, 471+216+216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'text_area.season', ''), get_json(json, 'appearance.text_color', '#000000'))
+
+    season_raw = get_json(json, 'text_area.season', '')
+    if '/' in season_raw:
+        season = get_json(json, f'text_area.season', '').split('/')[0]
+        x, *_ = text_draw(draw, (55, 471 + 216 + 216+8), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, season, get_json(json, 'appearance.text_color', '#000000'))
+
+        season_outline = get_json(json, f'text_area.season', '').split('/')[1]
+        text_draw(draw, (55+x+4, 471 + 216 + 216 + 8), 'Helvetica_Neue_LT_Std_65_Medium-4-outline.otf', 126-5, season_outline, get_json(json, 'appearance.text_color', '#000000'))
+    else:
+        season_outline = ''
+        text_draw(draw, (55, 471 + 216 + 216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, season_raw, get_json(json, 'appearance.text_color', '#000000'))
+
 
 
 

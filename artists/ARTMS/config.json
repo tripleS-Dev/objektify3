@@ -8,20 +8,24 @@
   "seasons": {
     "Atom01": {
       "First":   ["#FFDD00", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Atom/01"
     },
     "Binary01": {
       "First":   ["#00FF00", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Binary/01"
     },
     "Cream01": {
       "First":   ["#FF7477", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Cream/01"
     },
     "Divine01": {
       "First":   ["#B301FE", "#000000"],
       "Special": ["special", "#000000"],
-      "Premier": ["premier", "#FFFFFF"]
+      "Premier": ["premier", "#FFFFFF"],
+      "display": "Divine/01"
     }
   },
   "members": {

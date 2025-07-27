@@ -8,29 +8,35 @@
   "seasons": {
     "Atom01": {
       "First":   ["#FFDD00", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Atom/01"
     },
     "Binary01": {
       "First":   ["#00FF00", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Binary/01"
     },
     "Cream01": {
       "First":   ["#FF7477", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Cream/01"
     },
     "Divine01": {
       "First":   ["#B301FE", "#000000"],
-      "Special": ["special", "#000000"]
+      "Special": ["special", "#000000"],
+      "display": "Divine/01"
     },
     "Ever01": {
       "First":   ["#33ecfd", "#000000"],
       "Special": ["special", "#000000"],
-      "premier": ["premier", "#FFFFFF"]
+      "premier": ["premier", "#FFFFFF"],
+      "display": "Ever/01"
     },
     "Atom02": {
       "First":   ["#ffdd01", "#000000"],
       "Special": ["special", "#000000"],
-      "premier": ["premier", "#FFFFFF"]
+      "premier": ["premier", "#FFFFFF"],
+      "display": "Atom/02"
     }
   },
   "members": {
