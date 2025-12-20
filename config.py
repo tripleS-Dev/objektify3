@@ -8,3 +8,5 @@ season_color = {
         'Spring25': "#FF0000",
         "Atom02":  "#ffdd01",
 }
+
+dev_option = True

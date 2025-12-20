@@ -6,10 +6,12 @@ from PIL import Image, ImageOps
 from generate.front import resize_round, make_json
 from utils import on_load, season_load, paste_correctly, class_load
 
+from config import dev_option
+
 
 def front():
     with gr.Tab('Simple', id=0) as simple:
-        with gr.Group('hidden', visible=False):
+        with gr.Group('hidden', visible=dev_option):
             numbering_state = gr.Checkbox(value=False)
 
         with gr.Column():
@@ -33,7 +35,7 @@ def front():
                     download_btn = gr.DownloadButton(label='Download', variant="primary", visible=False)
                     share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
 
-                    go_advanced = gr.Button(value='Go to Advanced', variant="primary", visible=True)
+                    go_advanced = gr.Button(value='Edit More', variant="primary", visible=True)
 
     all_components = [artist, season, classes, member, numbering_state, number, alphabet, serial, qr_code]
 

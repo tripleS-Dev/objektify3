@@ -5,7 +5,7 @@ from utils import color_change, get_json, paste_correctly, text_draw, qr_image
 
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources/'
 
-def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_img=None, sign_position=None) -> Image.Image:
+def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_img=None, sign_position=None, qr_logo_img=None) -> Image.Image:
 
     backside, layout, inside = open_images()
 
@@ -41,7 +41,8 @@ def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_i
         season_outline = ''
         text_draw(draw, (55, 471 + 216 + 216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, season_raw, get_json(json, 'appearance.text_color', '#000000'))
 
-
+    if not get_json(json, 'text_area.qr_caption', '') == '':
+        text_draw(draw, (670, 1348), 'Inter-SemiBold.ttf', 32, get_json(json, 'text_area.qr_caption', None), get_json(json, 'appearance.text_color', '#000000'), pos=1)
 
 
     sidebar = Image.open(BASE_DIR + 'sidebar.png')
@@ -86,8 +87,12 @@ def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_i
     backside = paste_correctly(backside, (865, 98), sidebar)
 
     if get_json(json, 'text_area.qr_code', None):
-        qr_code = qr_image(get_json(json, 'text_area.qr_code', None))
+        qr_code = qr_image(get_json(json, 'text_area.qr_code', None), qr_logo_img)
         backside = paste_correctly(backside, (514, 1020), qr_code)
+
+
+
+
 
     return backside
 

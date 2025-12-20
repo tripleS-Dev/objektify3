@@ -3,6 +3,7 @@
   "official": true,
   "side_logo": false,
   "top_logo": true,
+  "qr_logo": true,
   "default": true,
   "default_color": "#F4EFFF",
   "seasons": {
@@ -29,13 +30,13 @@
     "Ever01": {
       "First":   ["#33ecfd", "#000000"],
       "Special": ["special", "#000000"],
-      "premier": ["premier", "#FFFFFF"],
+      "Premier": ["premier", "#FFFFFF"],
       "display": "Ever/01"
     },
     "Atom02": {
       "First":   ["#ffdd01", "#000000"],
       "Special": ["special", "#000000"],
-      "premier": ["premier", "#FFFFFF"],
+      "Premier": ["premier", "#FFFFFF"],
       "display": "Atom/02"
     }
   },

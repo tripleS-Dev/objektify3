@@ -89,7 +89,11 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
 
     season_text = config.get('seasons', {}).get(season, {}).get('display', season)
 
-
+    if get_json(config, f'qr_logo', False):
+        qr_logo_path = os.path.join('./artists', artist, f'qr_logo.png')
+        qr_logo_img = Image.open(qr_logo_path)
+    else:
+        qr_logo_img = None
 
     data = {
         "artist": {
@@ -108,7 +112,8 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         "text_area": {
             "class": class_,
             "season": season_text,
-            "qr_code": qr_code
+            "qr_code": qr_code,
+            "qr_caption": 'https://objektify.xyz'
         }
     }
 
@@ -116,11 +121,11 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     #print(data)
     krtime = get_kr_time()
     img = front(krtime, input_image_raw, data, side_logo_img, side_bar_img)
-    img2 = back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position)
+    img2 = back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
 
     combined = combine(krtime, img, img2)
 
-    advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1])
+    advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1], qr_logo_img, top_logo_img, side_logo_img)
 
 
     return [[img, img2, combined], gr.DownloadButton(value=img)] + advanced_components
@@ -136,8 +141,8 @@ def front(krtime, input_image_raw, data, side_logo_img, side_bar_img):
     return f'./cache/objektify-front-{krtime}.png'
 
 
-def back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position):
-    img = generate_back(data, back_img, side_logo_img, top_logo_img, sign_img, sign_position)
+def back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img):
+    img = generate_back(data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
     meta.add_text('side', 'front')

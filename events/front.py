@@ -15,13 +15,15 @@ def front(input_image_raw=None, input_image=None, front_components=None, others=
 
     if not any(component == '' for component in [input_image_raw, artist]):
         for component in all_components:
-            if not component == artist:
-                component.input(fn=make_json, inputs=all_components,
-                                outputs=[input_image, download_btn] + advanced_components)
-
-            else:
+            if component == artist:
                 component.input(fn=lambda x, y: make_json(x, y) + [False], inputs=[input_image_raw, artist],
                                 outputs=[input_image, download_btn] + advanced_components + [numbering_state])
+            elif component == member:
+                component.blur(fn=make_json, inputs=all_components,
+                                outputs=[input_image, download_btn] + advanced_components)
+            else:
+                component.input(fn=make_json, inputs=all_components,
+                                outputs=[input_image, download_btn] + advanced_components)
 
     input_image.upload(fn=resize_round, inputs=[input_image] + all_components,
                        outputs=[input_image, input_image_raw, share_btn]+ advanced_components)

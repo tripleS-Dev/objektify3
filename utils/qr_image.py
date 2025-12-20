@@ -1,7 +1,10 @@
 import qrcode
 from PIL import Image
 
-def qr_image(url):
+from utils import paste_correctly
+
+
+def qr_image(url, logo: Image.Image=None):
     # Generate QR code with a smaller border
     qr = qrcode.QRCode(
         version=1,
@@ -13,9 +16,13 @@ def qr_image(url):
     qr.make(fit=True)
 
     # Create an image from the QR Code instance
-    qr_img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
+    qr_img = qr.make_image(fill_color="black", back_color="white").convert('RGBA')
 
     qr_img = qr_img.resize((313,311), Image.Resampling.LANCZOS)
+
+
+    if logo:
+        qr_img = paste_correctly(qr_img, (115, 116), logo)
 
     return qr_img
 

@@ -3,6 +3,7 @@
   "official": true,
   "side_logo": true,
   "top_logo": true,
+  "qr_logo": true,
   "default": true,
   "default_color": "#ebebeb",
   "seasons": {
