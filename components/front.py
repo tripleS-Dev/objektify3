@@ -30,15 +30,15 @@ def front():
                 with gr.Row():
                     qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True)
 
-            with gr.Group():
-                with gr.Column():
-                    download_btn = gr.DownloadButton(label='Download', variant="primary", visible=False)
-                    share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
+            with gr.Row():
+                download_btn = gr.DownloadButton(label='Download', variant="primary", visible=False)
+                share_btn = gr.DownloadButton(label='Share', variant="primary", visible=False)
+                go_advanced = gr.Button(value='Edit More', variant="primary", visible=False)
 
-                    go_advanced = gr.Button(value='Edit More', variant="primary", visible=True)
+                go_download_share = gr.Button(value='Download/Share', variant="primary", visible=True)
 
     all_components = [artist, season, classes, member, numbering_state, number, alphabet, serial, qr_code]
 
-    others = [download_btn, share_btn, go_advanced, numbering, qrcoding]
+    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share]
 
     return all_components, others
