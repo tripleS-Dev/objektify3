@@ -7,12 +7,13 @@ def build_ui(mode: str):
     """모드에 맞는 컴포넌트 리스트를 만들어 반환"""
     # 모드별 표시 설정만 딕셔너리로 관리
     CONFIG = {
-        "static": (True, False, False),
-        "colorful": (False, True, False),
+        "Static": (True, False),
+        "Colorful": (False, True),
+        "None": (False, False)
     }
 
 
-    cp1, cp2, img = CONFIG.get(mode, CONFIG["static"])
+    cp1, cp2 = CONFIG.get(mode, CONFIG["Static"])
     return [
         gr.ColorPicker(visible=cp1),
         gr.Checkboxgroup(visible=cp2),
@@ -24,11 +25,12 @@ def advanced():
         with gr.Group('hidden', visible=False):
             pass
 
+        gr.Markdown(value="Advanced is under development.")
         with gr.Column():
             with gr.Accordion(label='Colors', open=False):
                 with gr.Row(equal_height=True):
                     with gr.Column():
-                        color_type_choices = ['static', 'colorful']
+                        color_type_choices = ['Static', 'Colorful', 'None']
                         color_type = gr.Radio(choices=color_type_choices, label='main', value=color_type_choices[0])
 
                         static_color = gr.ColorPicker(interactive=True, label='Main Color', value='#FFFFFF', visible=True)
@@ -42,15 +44,15 @@ def advanced():
 
             with gr.Accordion(label='Texts', open=False):
                 with gr.Row():
-                    name = gr.Text(interactive=True, label='Name')
-                    group_text = gr.Text(interactive=True, label='Group')
+                    name = gr.Textbox(interactive=True, label='Name', value='')
+                    group_text = gr.Textbox(interactive=True, label='Group', value='')
 
                 with gr.Row():
-                    class_ = gr.Text(interactive=True, label='Class')
+                    class_ = gr.Textbox(interactive=True, label='Class', value='')
 
                 with gr.Row():
-                    season = gr.Text(interactive=True, label='Season')
-                    season_outline = gr.Text(interactive=True, label='Season outline')
+                    season = gr.Textbox(interactive=True, label='Season', value='')
+                    season_outline = gr.Textbox(interactive=True, label='Season outline', value='')
 
             with gr.Accordion(label='Numbering', open=False):
                 with gr.Row():
@@ -71,10 +73,10 @@ def advanced():
 
 
             with gr.Accordion(label='QR Code', open=False):
-                qr_code = gr.Text(interactive=True, label='QR Code')
+                qr_code = gr.Textbox(interactive=True, label='QR Code')
 
                 qr_logo = gr.Image(interactive=True, label='QR Logo', sources='upload')
-                qr_caption = gr.Text(interactive=True, label='QR Caption')
+                qr_caption = gr.Textbox(interactive=True, label='QR Caption')
 
             with gr.Accordion(label='Group Logos', open=False):
                 with gr.Row():
@@ -83,7 +85,7 @@ def advanced():
 
 
 
-            with gr.Accordion(label='Layouts', open=False):
+            with gr.Accordion(label='Layouts', open=False, visible=False):
                 with gr.Row():
                     front_layout = gr.Image(interactive=True, label='Front Layout', sources='upload')
                     back_layout = gr.Image(interactive=True, label='Back Layout', sources='upload')
