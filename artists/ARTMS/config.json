@@ -27,6 +27,12 @@
       "Special": ["special", "#000000"],
       "Premier": ["premier", "#FFFFFF"],
       "display": "Divine/01"
+    },
+    "Ever01": {
+      "First":   ["#33ecfd", "#000000"],
+      "Special": ["special", "#000000"],
+      "Premier": ["premier", "#FFFFFF"],
+      "display": "Ever/01"
     }
   },
   "members": {

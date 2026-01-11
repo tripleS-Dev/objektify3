@@ -38,6 +38,12 @@
       "Special": ["special", "#000000"],
       "Premier": ["premier", "#FFFFFF"],
       "display": "Atom/02"
+    },
+    "Binary02": {
+      "First":   ["#ffdd01", "#000000"],
+      "Special": ["special", "#000000"],
+      "Premier": ["premier", "#FFFFFF"],
+      "display": "Binary/02"
     }
   },
   "members": {
