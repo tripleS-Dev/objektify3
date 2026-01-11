@@ -33,4 +33,13 @@ body, html, .gradio-container, .gradio-container > .gr-block {
 }
 
 footer{display:none !important}
+
+
+#bottom-btn {
+    position: fixed;
+    bottom: 70px;
+    width: 90%;
+    left: 5%;
+    z-index: 100;
+}
 """
