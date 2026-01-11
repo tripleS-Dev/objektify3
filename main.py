@@ -1,31 +1,33 @@
 import gradio as gr
-from components import front, sidebar, advanced
+from components import front, advanced, download_share_sidebar, hidden
 
-from html_elements import css, theme, animation
+from html_elements import css, theme, animation, footer
 import events
 
-from config import dev_option
 
 with gr.Blocks() as demo:
-    #sidebar(False)
-    with gr.Group('hidden', visible=dev_option):
-        input_image_raw = gr.Image(type='pil', image_mode='RGBA')
-        true = gr.Checkbox(value=True)
-        false = gr.Checkbox(value=False)
 
+    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws = hidden()
 
     with gr.Row():
         with gr.Row(elem_classes='sticky-image'):
-            input_image = gr.Gallery(type='filepath', interactive=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png', '.jpg', '.jpeg', '.webp'], object_fit='contain', height='100%')
+            input_image = gr.Gallery(type='filepath', interactive=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png', '.jpg', '.jpeg', '.webp'], object_fit='contain', height='100%', buttons=['download','fullscreen'])
+
+        with gr.Column():
+            with gr.Tabs() as difficult:
+                front_components, others = front()
+                advanced_components = advanced()
+            gr.Markdown(value="\n\n\n\n")
+            gr.Markdown(value="\n\n\n\n")
+
+            gr.Markdown(value=footer)
 
 
-        with gr.Tabs() as difficult:
-            front_components, others = front()
-            advanced_components = advanced()
+    download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.front(input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult)
-    events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
+    events.front(input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
+    #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
 
-demo.launch(server_name='0.0.0.0', ssr_mode=True, css=css, theme=theme, js=animation)
+demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=80)
