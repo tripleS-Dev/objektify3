@@ -11,7 +11,9 @@
   <a href="https://github.com/tripleS-Dev">
     <img src="https://img.shields.io/badge/Created%20by-hj__sss-black?style=for-the-badge&logo=github" alt="Created by hj_sss">
   </a>
-  <img src="https://img.shields.io/badge/Status-Under_Construction-orange?style=for-the-badge" alt="Status">
+  <a href="https://objektify.xyz">
+    <img src="https://img.shields.io/badge/Status-Under_Construction-orange?style=for-the-badge" alt="Status">
+  </a>
 
   <br />
   <br />
