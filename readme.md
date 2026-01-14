@@ -42,19 +42,22 @@ Whether you want to frame your favorite photos, create memes, or design fan art,
 
 ## 💬 Community & Support
 
-Have a suggestion, found a bug, or just want to chat? Join our community!
+Have a suggestion, found a bug, or just want to chat? **We highly recommend using Discord for the fastest response.**
 
 * **Discord Server**: [Join the Objektify Discord](https://discord.gg/KAuTCUGXpH)
-    * 📢 Announcements & Updates
-    * 🐛 Bug Reporting
-    * 🗣️ Community Chat
+* **Direct Message**: `hj_sss` (on Discord)
 
-## 📧 Contact
+Please use these channels for:
+* 📢 Announcements & Updates
+* 🐛 Bug Reporting
+* 🗣️ Community Chat / Feedback
 
-For business inquiries or other concerns, please contact us via email.
+## 📧 Business Contact
 
-* **Creator**: hj_sss (https://github.com/tripleS-Dev)
+For **business inquiries only**, please contact us via email.
+
 * **Business Email**: [cs@objektify.xyz](mailto:cs@objektify.xyz)
+* **Creator**: hj_sss (https://github.com/tripleS-Dev)
 
 ---
 
