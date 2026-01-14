@@ -16,7 +16,11 @@ share_js = r"""
 
           if (!files.length) { alert("파일을 가져오지 못했어요."); return []; }
 
-          const data = { title: document.title || "Gradio", files };
+          const data = {
+            title: "Make your own photo card! Objektify",
+            text: "Make your own photo card! [Objektify.xyz](https://objektify.xyz)",
+            files
+          };
 
           if (navigator.canShare && navigator.canShare({ files })) {
             try { await navigator.share(data); } catch (e) {}
