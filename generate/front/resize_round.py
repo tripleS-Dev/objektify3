@@ -8,7 +8,11 @@ BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
 def resize_round(img, input_image_raw=None, artist=None, season = None, class_ = None, member = None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
-    img = img[0][0]
+    print(img)
+    if len(img) >= 4 and "objektify-combined" in img[2][0]:
+        img = img[3][0]
+    else:
+        img = img[0][0]
 
     img = Image.open(img)
 
