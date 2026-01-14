@@ -1,60 +1,71 @@
-# Objektify
+<div align="center">
 
-**Objektify** is a fan-made web tool for creating custom photo-card style designs inspired by the “Objekt” aesthetic.
+  # Objektify
+  **The Unofficial Custom Objekt Generator for tripleS WAV**
 
-> ⚠️ **Notice:** Objektify is currently undergoing a large-scale rebuild.  
-> The website is temporarily **offline** and **not functional at the moment**, but it is planned to **relaunch sometime in January**.
+  <br />
 
----
+  <a href="https://discord.gg/KAuTCUGXpH">
+    <img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
+  </a>
+  <a href="https://github.com/tripleS-Dev">
+    <img src="https://img.shields.io/badge/Created%20by-hj__sss-black?style=for-the-badge&logo=github" alt="Created by hj_sss">
+  </a>
+  <img src="https://img.shields.io/badge/Status-Under_Construction-orange?style=for-the-badge" alt="Status">
 
-## Status
+  <br />
+  <br />
+</div>
 
-- 🛠️ **Major renovation in progress**
-- 🌐 Website: **offline (temporarily)**
-- 🚀 Expected return: **January (reopening planned)**
-
----
-
-## What it does
-
-Objektify lets you:
-
-- Create your own custom photo-card style designs
-- Export/share your creations (when the site is live)
-- Experiment with layouts and visuals in an Objekt-like format
-
-*(Exact features may change during the rebuild.)*
-
----
-
-## Roadmap (during rebuild)
-
-Planned work includes:
-
-- Infrastructure + codebase cleanup
-- UI/UX improvements
-- Performance and stability upgrades
-- Additional templates / customization options
+> [!WARNING]
+> ### 🚧 Major Renovation in Progress
+> **objektify.xyz** is currently **offline** for a complete structural overhaul and performance improvements.
+> We are working hard to bring you a better experience.
+>
+> 🗓️ **Estimated Re-opening:** January 2026
 
 ---
 
-## Contributing
+## 📖 About The Project
 
-Right now the project is in heavy construction mode, so contributions may be limited until the relaunch.
+**Objektify** is a fan-made web tool dedicated to **tripleS** and their fans (WAV). It allows users to easily create custom digital photocards that mimic the official "Objekt" design style found in the Cosmo app.
 
-If you still want to help:
-- Open an issue for bugs/ideas
-- Share feedback and feature requests
-- Submit PRs if you see something clearly fixable
+Whether you want to frame your favorite photos, create memes, or design fan art, Objektify provides the tools to make it look authentic.
+
+## ✨ Features
+
+* **Custom Image Upload**: Drag and drop support for your own photos.
+* **Authentic Design**: Overlays official-style borders, class markers (First, Double, Special), and fonts.
+* **High-Quality Export**: Download your creations in high resolution instantly.
+
+## 💬 Community & Support
+
+Have a suggestion, found a bug, or just want to chat? Join our community!
+
+* **Discord Server**: [Join the Objektify Discord](https://discord.gg/KAuTCUGXpH)
+    * 📢 Announcements & Updates
+    * 🐛 Bug Reporting
+    * 🗣️ Community Chat
+
+## 📧 Contact
+
+For business inquiries or other concerns, please contact us via email.
+
+* **Creator**: hj_sss (https://github.com/tripleS-Dev)
+* **Business Email**: [cs@objektify.xyz](mailto:cs@objektify.xyz)
 
 ---
 
-## Contact
+## ⚠️ Disclaimer
 
-- GitHub Issues: please use this repository’s issue tracker for bugs and feature requests.
+This is an **unofficial fan-made project**.
 
----
+* **Objektify** is not affiliated with, endorsed by, or connected to **Modhaus**, **tripleS**, or the **Cosmo** app.
+* All official design assets and intellectual property related to "Objekt" belong to Modhaus.
+* This tool is intended for non-commercial, personal entertainment purposes only.
 
-## License
+<br />
 
-Add your license here (e.g., MIT), or remove this section if not applicable.
+<div align="center">
+  <sub>Made with ❤️ by <b>hj_sss</b></sub>
+</div>
