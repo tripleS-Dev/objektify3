@@ -167,7 +167,7 @@ def back(meta_dict, krtime, data, back_img, side_logo_img, top_logo_img, sign_im
     img = generate_back(data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
-    meta.add_text('aspect', 'front')
+    meta.add_text('aspect', 'back')
     meta.add_text('mode', 'simple')
 
     # meta_dict 내용 추가
@@ -196,7 +196,7 @@ def combine(meta_dict, krtime, img, img2):
 
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
-    meta.add_text('side', 'front')
+    meta.add_text('aspect', 'both')
     meta.add_text('mode', 'simple')
 
     # meta_dict 내용 추가
