@@ -4,15 +4,30 @@ import numpy as np
 
 from generate.front.make_json import make_json  # Corrected import
 
+from utils import get_kr_time, copy_image_to_folder
+import secrets
+
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
 def resize_round(img, input_image_raw=None, artist=None, season = None, class_ = None, member = None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
-    print(img)
+
     if len(img) >= 4 and "objektify-combined" in img[2][0]:
         img = img[3][0]
     else:
         img = img[0][0]
+
+    krtime = get_kr_time()
+
+    source_image = str(img)  # 원본 이미지 경로
+    logs_dir = Path('logs')
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    folder_name = f"{krtime}_{secrets.token_hex(4)}"
+    folder_path = logs_dir / folder_name
+    folder_path.mkdir(parents=True, exist_ok=True)
+
+    copy_image_to_folder(source_image, folder_path)
+
 
     img = Image.open(img)
 
@@ -53,6 +68,6 @@ def resize_round(img, input_image_raw=None, artist=None, season = None, class_ =
     if artist:
         a = make_json(new_img, artist, season, class_, member, numbering_state, number, alphabet, serial, qr_code)
         img_card, download_front, download_back, download_combine, raws = a[0], a[1], a[2], a[3], a[4]
-        return [img_card, new_img, download_front, download_back, download_combine, raws]+ a[5:]
+        return [folder_name, img_card, new_img, download_front, download_back, download_combine, raws]+ a[5:]
     else:
-        return [[new_img], new_img, None, None, None, None, None, None]+ blank
+        return [folder_name, [new_img], new_img, None, None, None, None, None, None]+ blank

@@ -11,3 +11,4 @@ from .get_json import get_json
 from .qr_image import qr_image
 from .simple2advanced import simple2advanced
 from .get_meta import get_meta
+from .copy_image_to_folder import copy_image_to_folder
