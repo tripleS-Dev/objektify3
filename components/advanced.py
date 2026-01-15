@@ -44,21 +44,21 @@ def advanced():
 
             with gr.Accordion(label='Texts', open=False):
                 with gr.Row():
-                    name = gr.Textbox(interactive=True, label='Name', value='')
-                    group_text = gr.Textbox(interactive=True, label='Group', value='')
+                    name = gr.Textbox(interactive=True, label='Name', value='', max_lines=1)
+                    group_text = gr.Textbox(interactive=True, label='Group', value='', max_lines=1)
 
                 with gr.Row():
-                    class_ = gr.Textbox(interactive=True, label='Class', value='')
+                    class_ = gr.Textbox(interactive=True, label='Class', value='', max_lines=1)
 
                 with gr.Row():
-                    season = gr.Textbox(interactive=True, label='Season', value='')
-                    season_outline = gr.Textbox(interactive=True, label='Season outline', value='')
+                    season = gr.Textbox(interactive=True, label='Season', value='', max_lines=1)
+                    season_outline = gr.Textbox(interactive=True, label='Season outline', value='', max_lines=1)
 
             with gr.Accordion(label='Numbering', open=False):
                 with gr.Row():
-                    number = gr.Textbox(interactive=True, label='Number', value='')
-                    alphabet = gr.Textbox(interactive=True, label='Alphabet', value='')
-                    serial = gr.Textbox(interactive=True, label='Serial', value='')
+                    number = gr.Textbox(interactive=True, label='Number', value='', max_lines=1)
+                    alphabet = gr.Textbox(interactive=True, label='Alphabet', value='', max_lines=1)
+                    serial = gr.Textbox(interactive=True, label='Serial', value='', max_lines=1)
 
             with gr.Accordion(label='Sign', open=False):
                 with gr.Row(equal_height=True):
@@ -73,10 +73,10 @@ def advanced():
 
 
             with gr.Accordion(label='QR Code', open=False):
-                qr_code = gr.Textbox(interactive=True, label='QR Code')
+                qr_code = gr.Textbox(interactive=True, label='QR Code', max_lines=1)
 
                 qr_logo = gr.Image(interactive=True, label='QR Logo', sources='upload')
-                qr_caption = gr.Textbox(interactive=True, label='QR Caption')
+                qr_caption = gr.Textbox(interactive=True, label='QR Caption', max_lines=1)
 
             with gr.Accordion(label='Group Logos', open=False):
                 with gr.Row():
