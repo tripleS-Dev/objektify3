@@ -121,13 +121,24 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     #print(data)
     krtime = get_kr_time()
 
+    # 메타데이터로 저장할 인수들을 딕셔너리로 구성 (input_image_raw 제외)
+    meta_dict = {
+        "artist": str(artist),
+        "season": str(season),
+        "class": str(class_),
+        "member": str(member),
+        "numbering_state": str(numbering_state),
+        "number": str(number),
+        "alphabet": str(alphabet),
+        "serial": str(serial),
+        "qr_code": str(qr_code)
+    }
 
 
+    img = front(meta_dict, krtime, input_image_raw, data, side_logo_img, side_bar_img)
+    img2 = back(meta_dict, krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
 
-    img = front(krtime, input_image_raw, data, side_logo_img, side_bar_img)
-    img2 = back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
-
-    combined = combine(krtime, img, img2)
+    combined = combine(meta_dict, krtime, img, img2)
 
     advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1], qr_logo_img, top_logo_img, side_logo_img, side_bar_img, back_img)
 
@@ -136,25 +147,40 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
 
 
 
-def front(krtime, input_image_raw, data, side_logo_img, side_bar_img):
+def front(meta_dict, krtime, input_image_raw, data, side_logo_img, side_bar_img):
     img = generate_front(input_image_raw, data, side_logo_img, side_bar_img)
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
-    meta.add_text('side', 'front')
+    meta.add_text('aspect', 'front')
+
+    # meta_dict 내용 추가
+    if meta_dict:
+        for key, value in meta_dict.items():
+            meta.add_text(key, value)
+
+
     img.save(f'./cache/objektify-front-{krtime}.png', pnginfo=meta)  # save to cache
     return f'./cache/objektify-front-{krtime}.png'
 
 
-def back(krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img):
+def back(meta_dict, krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img):
     img = generate_back(data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
-    meta.add_text('side', 'front')
+    meta.add_text('aspect', 'front')
+    meta.add_text('mode', 'simple')
+
+    # meta_dict 내용 추가
+    if meta_dict:
+        for key, value in meta_dict.items():
+            meta.add_text(key, value)
+
+
     img.save(f'./cache/objektify-back-{krtime}.png', pnginfo=meta)  # save to cache
     return f'./cache/objektify-back-{krtime}.png'
 
 
-def combine(krtime, img, img2):
+def combine(meta_dict, krtime, img, img2):
 
     img = Image.open(img)
     img2 = Image.open(img2)
@@ -171,6 +197,14 @@ def combine(krtime, img, img2):
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
     meta.add_text('side', 'front')
+    meta.add_text('mode', 'simple')
+
+    # meta_dict 내용 추가
+    if meta_dict:
+        for key, value in meta_dict.items():
+            meta.add_text(key, value)
+
+
     combined.save(f'./cache/objektify-combined-{krtime}.png', pnginfo=meta)  # save to cache
     return f'./cache/objektify-combined-{krtime}.png'
 
