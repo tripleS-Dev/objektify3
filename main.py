@@ -7,7 +7,7 @@ import events
 
 with gr.Blocks() as demo:
 
-    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws = hidden()
+    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id = hidden()
 
     with gr.Row():
         with gr.Row(elem_classes='sticky-image'):
@@ -26,7 +26,7 @@ with gr.Blocks() as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.front(input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
+    events.front(temp_id, input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
     #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
 print("http://localhost:800")
