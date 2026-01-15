@@ -1,12 +1,14 @@
 css = """
 body, html, .gradio-container, .gradio-container > .gr-block {
     overflow: visible !important;
-    -webkit-touch-callout:none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
-    -webkit-user-select:none;
-
-    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    /* 추가됨: 더블 탭 확대 방지 및 터치 반응 속도 개선 */
+    touch-action: manipulation; 
 }
+
 .sticky-image {
     position: sticky;
     top: 10px;
@@ -32,8 +34,7 @@ body, html, .gradio-container, .gradio-container > .gr-block {
     }
 }
 
-footer{display:none !important}
-
+footer { display: none !important; }
 
 #bottom-btn {
     position: fixed;

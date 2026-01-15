@@ -1,7 +1,7 @@
 import gradio as gr
 from components import front, advanced, download_share_sidebar, hidden
 
-from html_elements import css, theme, animation, footer
+from html_elements import css, theme, animation, footer, no_zoom_head
 import events
 
 
@@ -29,5 +29,5 @@ with gr.Blocks() as demo:
     events.front(input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
     #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
-
-demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=80)
+print("http://localhost:800")
+demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=800, head=no_zoom_head)
