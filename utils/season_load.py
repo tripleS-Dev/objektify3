@@ -13,8 +13,12 @@ def season_load(artist_name):
 
     members = config.get('members', []).keys()
 
+    abbrs = [
+        (info.get("abbr") or name)
+        for name, info in config.get("members", {}).items()
+    ]
 
-    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.Accordion(open=False, visible=False), '', '', '', gr.Accordion(open=False, visible=False), gr.Textbox(value='https://objektify.xyz/')
+    return gr.Radio(label='Season', choices=seasons, interactive=True, visible=True, value=None), gr.Radio(label='Class', choices=None, interactive=True, visible=False, value=None), gr.Dropdown(label='Member', choices=members, interactive=True, visible=False, value=''), gr.CheckboxGroup(label='Members', choices=abbrs, interactive=True, visible=False, value=None), gr.Accordion(open=False, visible=False), '100', 'Z', '1', gr.Accordion(open=False, visible=False), gr.Textbox(value='https://objektify.xyz/', visible=True)
 
 
 def class_load(artist_name, season, classes):
