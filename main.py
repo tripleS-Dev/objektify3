@@ -3,7 +3,7 @@ from components import front, advanced, download_share_sidebar, hidden
 
 from html_elements import css, theme, animation, footer, no_zoom_head
 import events
-
+import argparse
 
 with gr.Blocks() as demo:
 
@@ -29,6 +29,19 @@ with gr.Blocks() as demo:
     events.front(temp_id, cache_id, input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
     #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
-port = 800
+
+# 1. 인자 파서를 설정합니다.
+parser = argparse.ArgumentParser(description="Gradio 앱 실행 스크립트")
+parser.add_argument(
+    "--port",
+    type=int,
+    default=800,
+    help="서버를 실행할 포트 번호 (기본값: 800)"
+)
+
+# 2. 인자를 파싱합니다.
+args = parser.parse_args()
+port = args.port
+
 print(f"http://localhost:{port}")
 demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=port, head=no_zoom_head)
