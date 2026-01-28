@@ -7,13 +7,22 @@ from generate.front.make_json import make_json  # Corrected import
 from utils import get_kr_time, copy_image_to_folder
 import secrets
 
+import gradio as gr
+
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img, input_image_raw=None, artist=None, season = None, class_ = None, member = None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
-
+def resize_round(img, cache_id=None, input_image_raw=None, artist=None, season = None, class_ = None, member = None, unit=None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
     if len(img) >= 4 and "objektify-combined" in img[2][0]:
+        if len(img) >= 5:
+            gr.Info("You can only upload one image.", duration=5)
+
         img = img[3][0]
+
+
+    elif len(img) >= 2:
+        gr.Info("You can only upload one image.", duration=5)
+        img = img[0][0]
     else:
         img = img[0][0]
 
@@ -22,7 +31,7 @@ def resize_round(img, input_image_raw=None, artist=None, season = None, class_ =
     source_image = str(img)  # 원본 이미지 경로
     logs_dir = Path('logs')
     logs_dir.mkdir(parents=True, exist_ok=True)
-    folder_name = f"{krtime}_{secrets.token_hex(4)}"
+    folder_name = f"{krtime}"
     folder_path = logs_dir / folder_name
     folder_path.mkdir(parents=True, exist_ok=True)
 
@@ -66,8 +75,8 @@ def resize_round(img, input_image_raw=None, artist=None, season = None, class_ =
     blank = [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
 
     if artist:
-        a = make_json(new_img, artist, season, class_, member, numbering_state, number, alphabet, serial, qr_code)
-        img_card, download_front, download_back, download_combine, raws = a[0], a[1], a[2], a[3], a[4]
-        return [folder_name, img_card, new_img, download_front, download_back, download_combine, raws]+ a[5:]
+        a = make_json(folder_name, cache_id, new_img, artist, season, class_, member, unit, numbering_state, number, alphabet, serial, qr_code)
+        cache_id, img_card, download_front, download_back, download_combine, raws = a[0], a[1], a[2], a[3], a[4], a[5]
+        return [folder_name, cache_id, img_card, new_img, download_front, download_back, download_combine, raws]+ a[6:]
     else:
-        return [folder_name, [new_img], new_img, None, None, None, None, None, None]+ blank
+        return [folder_name, '', [new_img], new_img, None, None, None, None, None, None]+ blank
