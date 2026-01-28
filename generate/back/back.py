@@ -27,7 +27,8 @@ def generate_back(json, back_img=None, side_logo=None, top_logo_img=None, sign_i
     draw = ImageDraw.Draw(backside)
 
 
-    text_draw(draw, (55, 471), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
+
+    text_draw(draw, (55, 471), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126 if len(get_json(json, 'artist.name', '')) < 12 else 110, get_json(json, 'artist.name', ''), get_json(json, 'appearance.text_color', '#000000'))
     text_draw(draw, (55, 471+216), 'Helvetica_Neue_LT_Std_65_Medium-4.otf', 126, get_json(json, 'text_area.class', ''), get_json(json, 'appearance.text_color', '#000000'))
 
     season_raw = get_json(json, 'text_area.season', '')
