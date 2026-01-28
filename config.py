@@ -7,6 +7,7 @@ season_color = {
         "Ever01": "#33ecfd",
         'Spring25': "#FF0000",
         "Atom02":  "#ffdd01",
+        "Binary02": "#00FF01",
 }
 
 dev_option = False
