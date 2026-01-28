@@ -1,17 +1,9 @@
 import gradio as gr
-import json
-
-from PIL import Image, ImageOps
-
-from generate.front import resize_round, make_json
-from utils import on_load, season_load, paste_correctly, class_load
-
-from config import dev_option
 
 
 def front():
     with gr.Tab('Simple', id=0) as simple:
-        with gr.Group('hidden', visible=dev_option):
+        with gr.Group('hidden', visible=False):
             numbering_state = gr.Checkbox(value=False)
 
         with gr.Column():
@@ -19,6 +11,7 @@ def front():
             season = gr.Radio(label='Season', choices=None, interactive=True, visible=False)
             classes = gr.Radio(label='Class', choices=None, interactive=True, visible=False)
             member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=False, allow_custom_value=True)
+            unit = gr.CheckboxGroup(label='Members', choices=None, interactive=True, visible=False, type='value')
 
             with gr.Accordion(visible=False, open=False, label='Numbering (expand to enable)') as numbering:
                 with gr.Row():
@@ -28,7 +21,7 @@ def front():
 
             with gr.Accordion(visible=False, open=False, label='QR code') as qrcoding:
                 with gr.Row():
-                    qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True)
+                    qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True, visible=True)
 
             with gr.Row():
                 download_btn = gr.DownloadButton(label='Download', variant="primary", visible=False)
@@ -37,7 +30,7 @@ def front():
 
                 go_download_share = gr.Button(value='Download/Share', variant="primary", visible=True)
 
-    all_components = [artist, season, classes, member, numbering_state, number, alphabet, serial, qr_code]
+    all_components = [artist, season, classes, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
     others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share]
 
