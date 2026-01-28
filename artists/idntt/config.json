@@ -1,0 +1,50 @@
+{
+  "name": "idntt",
+  "official": true,
+  "side_logo": true,
+  "top_logo": true,
+  "qr_logo": true,
+  "default": true,
+  "default_color": "#ebebeb",
+  "seasons": {
+    "Spring25": {
+      "Event":   ["#2d3379", "#000000"],
+      "display": "Spring/25"
+    },
+    "Summer25": {
+      "Basic":   ["#7698f7", "#000000"],
+      "Special": ["special", "#000000"],
+      "Unit": ["unit", "#000000"],
+      "display": "Summer/25"
+    },
+    "Autumn25": {
+      "Basic":   ["#a24059", "#000000"],
+      "Special": ["special", "#000000"],
+      "Unit": ["unit", "#000000"],
+      "display": "Autumn/25"
+    },
+    "Winter26": {
+      "Basic":   ["#c6c6c6", "#000000"],
+      "Special": ["special", "#000000"],
+      "Unit": ["unit", "#000000"],
+      "display": "Winter/26"
+    }
+  },
+"members": {
+    "DoHun":        { "abbr": "id1",  "sign": true,  "position": [55, 1022] },
+    "HeeJu":        { "abbr": "id2",  "sign": true,  "position": [55, 1022] },
+    "TaeIn":        { "abbr": "id4",  "sign": true,  "position": [55, 1022] },
+    "JaeYoung":     { "abbr": "id5",  "sign": true,  "position": [55, 1022] },
+    "JuHo":         { "abbr": "id6",  "sign": true,  "position": [55, 1022] },
+    "JiWoon":       { "abbr": "id7",  "sign": true,  "position": [55, 1022] },
+    "HwanHee":      { "abbr": "id8",  "sign": true,  "position": [55, 1022] },
+    "CheongMyeong": { "abbr": "id9",  "sign": false, "position": [55, 1022] },
+    "Towa":         { "abbr": "id10", "sign": true,  "position": [55, 1022] },
+    "KyuHyuk":      { "abbr": "id11", "sign": false, "position": [55, 1022] },
+    "NuRi":         { "abbr": "id12", "sign": true,  "position": [55, 1022] },
+    "SeongJun":     { "abbr": "id13", "sign": false, "position": [55, 1022] },
+    "YeJoon":       { "abbr": "id14", "sign": false, "position": [55, 1022] },
+    "GyeongBeen":   { "abbr": "id15", "sign": false, "position": [55, 1022] },
+    "EunSoo":       { "abbr": "id16", "sign": false, "position": [55, 1022] }
+  }
+}
