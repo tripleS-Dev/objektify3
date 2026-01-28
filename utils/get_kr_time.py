@@ -1,12 +1,19 @@
-from datetime import datetime
 import pytz
+from datetime import datetime
+
+import secrets
+import string
+
+ALPHABET = string.ascii_letters + string.digits  # a-zA-Z0-9
+
+def random_id(len = 9) -> str:
+    # CSPRNG 기반: 같은 시간에 동시에 호출돼도(실질적으로) 독립 난수로 생성됨
+    return ''.join(secrets.choice(ALPHABET) for _ in range(len))
 
 def get_kr_time():
-    # 한국 시간대 설정
     korea_time_zone = pytz.timezone('Asia/Seoul')
-
-    # 현재 시간을 한국 시간대로 변환
     current_time_in_korea = datetime.now(korea_time_zone)
+    return current_time_in_korea.strftime(f"%Y%m%d-{random_id(8)}")
 
-    # 원하는 형식으로 시간 포맷팅
-    return current_time_in_korea.strftime("%Y%m%d-%H%M%S")
+if __name__ == "__main__":
+    print(get_kr_time())
