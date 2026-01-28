@@ -6,14 +6,28 @@ import gradio as gr
 from generate.back.back import generate_back
 from generate.front import generate_front
 from PIL import PngImagePlugin, Image
+from pathlib import Path
+from utils import get_kr_time, paste_correctly, get_json, simple2advanced, save_log_json
 
-from utils import get_kr_time, paste_correctly, get_json, simple2advanced
 
-
-def make_json(input_image_raw, artist, season=None, class_=None, member=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
-
+def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
     if not artist:
         return
+
+
+    if cache_id:
+        safe_name = Path(str(cache_id)).name
+        cache_dir = Path("./cache")
+
+        for suffix in ("objektify-front-", "objektify-back-", "objektify-combined-"):
+            path = cache_dir / f"{suffix}{safe_name}.png"
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+
+
+    raws = [artist, season, class_, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
 
     if not numbering_state:
@@ -95,6 +109,10 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     else:
         qr_logo_img = None
 
+
+    if not unit == None and not unit == '' and not unit == []:
+        member = ' X '.join(unit)
+
     data = {
         "artist": {
             "name": member,
@@ -114,7 +132,8 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
             "season": season_text,
             "qr_code": qr_code,
             "qr_caption": 'https://objektify.xyz'
-        }
+        },
+        "raw": raws
     }
 
 
@@ -134,6 +153,8 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
         "qr_code": str(qr_code)
     }
 
+    save_log_json(data, temp_id, f"{krtime}.json")
+
 
     img = front(meta_dict, krtime, input_image_raw, data, side_logo_img, side_bar_img)
     img2 = back(meta_dict, krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
@@ -143,7 +164,7 @@ def make_json(input_image_raw, artist, season=None, class_=None, member=None, nu
     advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1], qr_logo_img, top_logo_img, side_logo_img, side_bar_img, back_img)
 
 
-    return [[img, img2, combined], gr.DownloadButton(value=img), gr.DownloadButton(value=img2), gr.DownloadButton(value=combined), img, img2, combined] + advanced_components
+    return [krtime, [img, img2, combined], gr.DownloadButton(value=img), gr.DownloadButton(value=img2), gr.DownloadButton(value=combined), img, img2, combined] + advanced_components
 
 
 
