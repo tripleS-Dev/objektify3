@@ -1,4 +1,5 @@
 import gradio as gr
+from html_elements import ads
 
 
 def front():
@@ -29,6 +30,9 @@ def front():
                 go_advanced = gr.Button(value='Edit More', variant="primary", visible=False)
 
                 go_download_share = gr.Button(value='Download/Share', variant="primary", visible=True)
+
+            gr.HTML(value=ads, visible=True)
+
 
     all_components = [artist, season, classes, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
