@@ -110,7 +110,7 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
         qr_logo_img = None
 
 
-    if not unit == None and not unit == '' and not unit == []:
+    if class_ == 'Unit':
         member = ' X '.join(unit)
 
     data = {
