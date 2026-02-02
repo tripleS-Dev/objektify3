@@ -5,7 +5,7 @@ from html_elements import toggle_sidebar
 
 
 def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_components=None, others=None, advanced_components=None, true=None, false=None, demo=None, difficult=None, download_share_buttons=None, raws = None, download_bar = None):
-    artist, season, classes, member, unit, numbering_state, number, alphabet, serial, qr_code = front_components
+    artist, season, classes, colors, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code = front_components
     download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share = others
     download_front, download_back, download_combine, share_front, share_back, share_combined = download_share_buttons
 
@@ -16,7 +16,7 @@ def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_
 
     go_download_share.click(fn=None, inputs=[], outputs=[], js=toggle_sidebar)
 
-    all_components = [temp_id, cache_id, input_image_raw, artist, season, classes, member, unit, numbering_state, number, alphabet, serial, qr_code]
+    all_components = [temp_id, cache_id, input_image_raw, artist, season, classes, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
     if not any(component == '' for component in [input_image_raw, artist]):
         for component in all_components:
@@ -26,6 +26,11 @@ def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_
             elif component in [member, number, alphabet, serial, qr_code]:
                 component.blur(fn=make_json, inputs=all_components,
                                 outputs=[cache_id, input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components)
+
+            elif component in [background_color, text_color]:
+                component.input(fn=make_json, inputs=all_components,   #I want to '.blur' but it has bug https://github.com/gradio-app/gradio/issues/12854
+                                outputs=[cache_id, input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components)
+
             elif component == numbering_state:
                 component.change(fn=make_json, inputs=all_components,
                                 outputs=[cache_id, input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components)
@@ -44,12 +49,6 @@ def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_
     input_image.upload(fn=resize_round, inputs=[input_image] + all_components[1:],
                        outputs=[temp_id, cache_id, input_image, input_image_raw, download_front, download_back, download_combine, front_raw, back_raw, combined_raw]+ advanced_components)
 
-    #numbering.expand(fn=lambda a, b, c, d, e, f, g, h, i, j: make_json(a, b, c, d, e, f, g, h, i, j) + [True],
-    #                 inputs=all_components[:5] + [true] + all_components[6:],
-    #                 outputs=[input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components + [numbering_state])
-    #numbering.collapse(fn=lambda a, b, c, d, e, f, g, h, i, j: make_json(a, b, c, d, e, f, g, h, i, j) + [False],
-    #                   inputs=all_components[:5] + [false] + all_components[6:],
-    #                   outputs=[input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components + [numbering_state])
 
     numbering.expand(fn=lambda : gr.Checkbox(value=True), outputs=numbering_state)
     numbering.collapse(fn=lambda : gr.Checkbox(value=False), outputs=numbering_state)
@@ -57,7 +56,7 @@ def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_
     artist.change(fn=season_load, inputs=artist,
                   outputs=[season, classes, member, unit, numbering, number, alphabet, serial, qrcoding, qr_code])
     season.change(fn=class_load, inputs=[artist, season, classes], outputs=classes)
-    classes.input(fn=member_load, inputs=classes, outputs=[member, unit])
+    classes.input(fn=member_load, inputs=classes, outputs=[member, unit, colors])
     member.input(fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
                  outputs=[numbering, qrcoding])
     unit.input(fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
