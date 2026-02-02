@@ -28,7 +28,7 @@ def front(temp_id, cache_id=None, input_image_raw=None, input_image=None, front_
                                 outputs=[cache_id, input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components)
 
             elif component in [background_color, text_color]:
-                component.input(fn=make_json, inputs=all_components,   #I want to '.blur' but it has bug https://github.com/gradio-app/gradio/issues/12854
+                component.change(fn=make_json, inputs=all_components,   #I want to '.blur' but it has bug https://github.com/gradio-app/gradio/issues/12854
                                 outputs=[cache_id, input_image, download_front, download_back, download_combine, front_raw, back_raw, combined_raw] + advanced_components)
 
             elif component == numbering_state:
