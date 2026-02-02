@@ -13,18 +13,21 @@
     },
     "Summer25": {
       "Basic":   ["#7698f7", "#000000"],
+      "Event":   ["@choose", "#000000"],
       "Special": ["special", "#000000"],
       "Unit": ["unit", "#000000"],
       "display": "Summer/25"
     },
     "Autumn25": {
       "Basic":   ["#a24059", "#000000"],
+      "Event":   ["@choose", "#000000"],
       "Special": ["special", "#000000"],
       "Unit": ["unit", "#000000"],
       "display": "Autumn/25"
     },
     "Winter26": {
       "Basic":   ["#c6c6c6", "#000000"],
+      "Event":   ["@choose", "#000000"],
       "Special": ["special", "#000000"],
       "Unit": ["unit", "#000000"],
       "display": "Winter/26"
