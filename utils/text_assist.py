@@ -95,6 +95,53 @@ def text_size(
 
 
 
-def hex2rgb(hex_color):
-    hex_color = hex_color.lstrip('#')
-    return tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+import re
+
+_RGBA_RE = re.compile(
+    r"""^rgba?\(\s*
+        (?P<r>[\d.]+%?)\s*[, ]\s*
+        (?P<g>[\d.]+%?)\s*[, ]\s*
+        (?P<b>[\d.]+%?)
+        (?:\s*(?:[,/]\s*|\s+)\s*(?P<a>[\d.]+%?))?
+        \s*\)$
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+def _clamp255(x: float) -> int:
+    return max(0, min(255, int(round(x))))
+
+def _parse_chan(v: str) -> int:
+    v = v.strip()
+    if v.endswith("%"):
+        return _clamp255(float(v[:-1]) * 255.0 / 100.0)
+    return _clamp255(float(v))
+
+def hex2rgb(color: str):
+    """
+    입력:
+      - '#RRGGBB' / '#RGB'
+      - 'rgb(r,g,b)' / 'rgba(r,g,b,a)'
+      - 'rgb(r g b)' 같은 공백 구분도 허용
+    반환: (r, g, b) 0~255 int 튜플
+    """
+    color = color.strip()
+
+    # rgb/rgba 처리
+    if color.lower().startswith("rgb"):
+        m = _RGBA_RE.match(color)
+        if not m:
+            raise ValueError(f"Invalid rgb/rgba() format: {color}")
+        r = _parse_chan(m.group("r"))
+        g = _parse_chan(m.group("g"))
+        b = _parse_chan(m.group("b"))
+        return (r, g, b)
+
+    # hex 처리
+    h = color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    if len(h) != 6:
+        raise ValueError(f"Invalid hex format: {color}")
+
+    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
