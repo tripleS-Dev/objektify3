@@ -12,7 +12,7 @@ import gradio as gr
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img, cache_id=None, input_image_raw=None, artist=None, season = None, class_ = None, member = None, unit=None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
+def resize_round(img, cache_id=None, input_image_raw=None, artist=None, season = None, class_ = None, gr_background_color=None, gr_text_color=None, member = None, unit=None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
     if len(img) >= 4 and "objektify-combined" in img[2][0]:
         if len(img) >= 5:
             gr.Info("You can only upload one image.", duration=5)
@@ -75,7 +75,7 @@ def resize_round(img, cache_id=None, input_image_raw=None, artist=None, season =
     blank = [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
 
     if artist:
-        a = make_json(folder_name, cache_id, new_img, artist, season, class_, member, unit, numbering_state, number, alphabet, serial, qr_code)
+        a = make_json(folder_name, cache_id, new_img, artist, season, gr_background_color, gr_text_color, class_, member, unit, numbering_state, number, alphabet, serial, qr_code)
         cache_id, img_card, download_front, download_back, download_combine, raws = a[0], a[1], a[2], a[3], a[4], a[5]
         return [folder_name, cache_id, img_card, new_img, download_front, download_back, download_combine, raws]+ a[6:]
     else:

@@ -10,10 +10,9 @@ from pathlib import Path
 from utils import get_kr_time, paste_correctly, get_json, simple2advanced, save_log_json
 
 
-def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
+def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, gr_background_color=None, gr_text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
     if not artist:
         return
-
 
     if cache_id:
         safe_name = Path(str(cache_id)).name
@@ -90,16 +89,30 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
     else:
         text_color = text_color[1]
 
-    if not background_color.startswith('#'):
+
+
+    if background_color.startswith('#'):
+        side_bar_img = None
+        back_img = None
+
+    elif background_color.startswith('@'):
+        match background_color[1:]:
+            case 'choose':
+                side_bar_img = None
+                back_img = None
+
+                background_color = gr_background_color
+                text_color = gr_text_color
+
+
+    else:
         side_bar_img_path = os.path.join('./artists', artist, background_color, 'front.png')
         side_bar_img = Image.open(side_bar_img_path)
 
         back_img_path = os.path.join('./artists', artist, background_color, 'back.png')
         back_img = Image.open(back_img_path)
 
-    else:
-        side_bar_img = None
-        back_img = None
+
 
     season_text = config.get('seasons', {}).get(season, {}).get('display', season)
 
