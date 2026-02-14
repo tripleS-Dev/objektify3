@@ -2,7 +2,7 @@ import json
 import os
 
 import gradio as gr
-
+import time
 from generate.back.back import generate_back
 from generate.front import generate_front
 from PIL import PngImagePlugin, Image
@@ -13,6 +13,9 @@ from utils import get_kr_time, paste_correctly, get_json, simple2advanced, save_
 def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, gr_background_color=None, gr_text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
     if not artist:
         return
+
+    gen_started_at_epoch_us = time.time_ns() // 1_000  # Unix epoch in microseconds
+
 
     if cache_id:
         safe_name = Path(str(cache_id)).name
@@ -146,8 +149,13 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
             "qr_code": qr_code,
             "qr_caption": 'https://objektify.xyz'
         },
-        "raw": raws
+        "raw": raws,
+        "generation": {
+            "started_at_epoch_us": gen_started_at_epoch_us,
+            "timezone": "Asia/Seoul",
+        }
     }
+
 
 
     #print(data)
