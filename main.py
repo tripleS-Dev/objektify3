@@ -1,5 +1,5 @@
 import gradio as gr
-from components import front, advanced, download_share_sidebar, hidden
+from components import simple, advanced, download_share_sidebar, hidden
 
 from html_elements import css, theme, animation, footer, no_zoom_head
 import events
@@ -15,7 +15,8 @@ with gr.Blocks() as demo:
 
         with gr.Column():
             with gr.Tabs() as difficult:
-                front_components, others = front()
+                front_components, others = simple()
+
                 advanced_components = advanced()
             gr.Markdown(value="\n\n\n\n")
             gr.Markdown(value="\n\n\n\n")
@@ -27,7 +28,7 @@ with gr.Blocks() as demo:
 
 
     events.front(temp_id, cache_id, input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
-    #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
+    events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
 
 # 1. 인자 파서를 설정합니다.

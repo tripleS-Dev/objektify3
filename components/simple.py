@@ -2,7 +2,7 @@ import gradio as gr
 from html_elements import ads
 
 
-def front():
+def simple():
     with gr.Tab('Simple', id=0) as simple:
         with gr.Group('hidden', visible=False):
             numbering_state = gr.Checkbox(value=False)
