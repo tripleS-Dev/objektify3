@@ -1,5 +1,4 @@
 import gradio as gr
-from config import dev_option
 
 def hidden():
     with gr.Group('hidden', visible=False):

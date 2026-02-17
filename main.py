@@ -1,5 +1,5 @@
 import gradio as gr
-from components import simple, advanced, download_share_sidebar, hidden
+from components import simple, advanced, download_share_sidebar, hidden, simple_plus
 
 from html_elements import css, theme, animation, footer, no_zoom_head
 import events
@@ -15,8 +15,8 @@ with gr.Blocks() as demo:
 
         with gr.Column():
             with gr.Tabs() as difficult:
-                front_components, others = simple()
-
+                simple_components, others = simple()
+                simple_plus_components = simple_plus()
                 advanced_components = advanced()
             gr.Markdown(value="\n\n\n\n")
             gr.Markdown(value="\n\n\n\n")
@@ -27,7 +27,8 @@ with gr.Blocks() as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.front(temp_id, cache_id, input_image_raw, input_image, front_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
+    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
+    events.simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components)
     events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
 

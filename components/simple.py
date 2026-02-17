@@ -13,7 +13,7 @@ def simple():
             classes = gr.Radio(label='Class', choices=None, interactive=True, visible=False)
 
             with gr.Group(visible=False) as colors:
-                with gr.Row():
+                with gr.Row(equal_height=True):
                     background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#E61E2B', min_width = 300)
                     text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 300)
 

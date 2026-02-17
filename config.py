@@ -1,13 +1,8 @@
-season_color = {
-        None: "#FFFFFF",
-        "Atom01": "#FFDD00",
-        "Binary01": "#00FF00",
-        "Cream01": "#FF7477",
-        "Divine01": "#B301FE",
-        "Ever01": "#33ecfd",
-        'Spring25': "#FF0000",
-        "Atom02":  "#ffdd01",
-        "Binary02": "#00FF01",
+simple_plus_placeholder = {
+        'artist': 'IVE',
+        'season': 'REVIVE+',
+        'class': 'ALBUM/02',
+        'member': 'Wonyoung'
 }
 
-dev_option = False
+comfyui_SERVER = "192.168.50.15:8188"

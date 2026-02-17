@@ -21,11 +21,11 @@ def build_ui(mode: str):
 
 
 def advanced():
-    with gr.Tab('Advanced', id=1) as advanced:
+    with gr.Tab('Advanced', id=2) as advanced:
         with gr.Group('hidden', visible=False):
             pass
 
-        gr.Markdown(value="Advanced is under development.")
+        gr.Markdown(value="Advanced is under development.\n(Not working)")
         with gr.Column():
             with gr.Accordion(label='Colors', open=False):
                 with gr.Row(equal_height=True):
