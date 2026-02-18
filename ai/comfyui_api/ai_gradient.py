@@ -193,7 +193,6 @@ def run_gradient_ws_image(
     # Load bytes into a memory-backed Pillow image without touching disk.
     with Image.open(BytesIO(image_bytes)) as img:
         # 1) 1158 x 1673으로 리사이즈
-        img = img.resize((1158, 1673), Image.Resampling.LANCZOS)
         return img.copy()
 
 

@@ -27,7 +27,9 @@ def simple_plus():
                             ai_generate = gr.Button(interactive=True, value='Generate', variant='primary')
 
                         with gr.Column(scale=1):
-                            ai_preview = gr.Image(interactive=False, visible=True, sources=None, label='Preview', elem_classes='preview-image', height=220)
+                            ai_preview = gr.Image(interactive=False, visible=True, sources=None, label='Preview', elem_classes='preview-image', height=220, type='pil')
+                            ai_sidebar = gr.Image(interactive=False, visible=False, type='pil')
+                            ai_back = gr.Image(interactive=False, visible=False, type='pil')
 
 
                     with gr.Accordion('AI Others', visible=True, open=False):
@@ -56,7 +58,7 @@ def simple_plus():
             gr.HTML(value=ads, visible=True)
 
 
-    all_components = [artist, season, classes, colors, color_mode, background_color, ai_options, ai_color, ai_color_shape, ai_color_seed, ai_color_seed_type, ai_generate, ai_preview, text_color, member, numbering, number, alphabet, serial, qrcoding, qr_code]
+    all_components = [artist, season, classes, colors, color_mode, background_color, ai_options, ai_color, ai_color_shape, ai_color_seed, ai_color_seed_type, ai_generate, ai_preview, ai_sidebar, ai_back, text_color, member, numbering, number, alphabet, serial, qrcoding, qr_code]
 
 
     return all_components
