@@ -1,23 +1,26 @@
 import gradio as gr
-from components import simple, advanced, download_share_sidebar, hidden, simple_plus
+from components import simple, advanced, download_share_sidebar, hidden, simple_plus, others_tab
 
 from html_elements import css, theme, animation, footer, no_zoom_head
 import events
 import argparse
+from utils import on_load
 
-with gr.Blocks() as demo:
+
+with gr.Blocks(title='Objektify') as demo:
 
     input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id = hidden()
 
     with gr.Row():
-        with gr.Row(elem_classes='sticky-image'):
-            input_image = gr.Gallery(type='filepath', interactive=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png', '.jpg', '.jpeg', '.webp'], object_fit='contain', height='100%', buttons=['download','fullscreen'])
+        with gr.Row(elem_classes='sticky-image') as image_box:
+            input_image = gr.Gallery(type='filepath', interactive=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png', '.jpg', '.jpeg', '.webp'], object_fit='contain', height='100%', buttons=['download','fullscreen'], visible=True)
 
         with gr.Column():
-            with gr.Tabs() as difficult:
-                simple_components, others = simple()
+            with gr.Tabs() as tabs:
+                simple_components, others = simple(image_box)
                 simple_plus_components = simple_plus()
-                advanced_components = advanced()
+                others_tab(image_box)
+                #advanced_components = advanced()
             gr.Markdown(value="\n\n\n\n")
             gr.Markdown(value="\n\n\n\n")
 
@@ -27,9 +30,12 @@ with gr.Blocks() as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, advanced_components, true, false, demo, difficult, download_share_buttons, raws, download_bar)
+    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar)
     events.simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components)
-    events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
+    #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
+
+    demo.load(fn=on_load, outputs=[simple_components[0], simple_plus_components[4]])
+
 
 
 # 1. 인자 파서를 설정합니다.
@@ -46,4 +52,4 @@ args = parser.parse_args()
 port = args.port
 
 print(f"http://localhost:{port}")
-demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=port, head=no_zoom_head)
+demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=port, head=no_zoom_head, pwa=True)

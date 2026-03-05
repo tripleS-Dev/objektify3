@@ -6,3 +6,5 @@ simple_plus_placeholder = {
 }
 
 comfyui_SERVER = "192.168.50.15:8188"
+
+ai_enabled=False

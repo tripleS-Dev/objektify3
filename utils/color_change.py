@@ -59,3 +59,25 @@ def color_change(img: Image.Image, new_hex: str) -> Image.Image:
     new_rgb = _parse_rgb(new_hex)
     arr[..., :3] = new_rgb  # alpha 채널(arr[..., 3])은 그대로 둠
     return Image.fromarray(arr, mode="RGBA")
+
+
+def rgba_to_hex(s: str) -> str:
+    if s.startswith('#'):
+        return s
+
+    """
+    Convert 'rgba(r, g, b, a)' string to '#RRGGBB'.
+    Assumes alpha is always 1 (ignored).
+    R/G/B may be floats; they will be rounded and clamped to 0..255.
+    """
+    nums = re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", s)
+    if len(nums) < 3:
+        raise ValueError("Input does not contain at least 3 numeric values (r, g, b).")
+
+    r, g, b = (float(nums[0]), float(nums[1]), float(nums[2]))
+
+    def to_byte(x: float) -> int:
+        return max(0, min(255, int(round(x))))
+
+    r8, g8, b8 = map(to_byte, (r, g, b))
+    return f"#{r8:02X}{g8:02X}{b8:02X}"

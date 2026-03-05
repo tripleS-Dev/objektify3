@@ -24,6 +24,6 @@ def simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components):
 
     for component in generate_components:
         if component in [background_color, text_color]:
-            component.input(fn=lambda : gr.Info('blur'), inputs=simple_plus_components, )
+            component.input(fn=lambda : gr.Info('blur'))
         else:
-            component.blur(fn=lambda : gr.Info('blur'), inputs=simple_plus_components, )
+            component.blur(fn=lambda : gr.Info('blur'))

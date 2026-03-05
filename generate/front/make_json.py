@@ -182,10 +182,10 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
 
     combined = combine(meta_dict, krtime, img, img2)
 
-    advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1], qr_logo_img, top_logo_img, side_logo_img, side_bar_img, back_img)
+    #advanced_components = simple2advanced(data, sign_img, sign_position[0], sign_position[1], qr_logo_img, top_logo_img, side_logo_img, side_bar_img, back_img)
 
 
-    return [krtime, [img, img2, combined], gr.DownloadButton(value=img), gr.DownloadButton(value=img2), gr.DownloadButton(value=combined), img, img2, combined] + advanced_components
+    return [krtime, [img, img2, combined], gr.DownloadButton(value=img), gr.DownloadButton(value=img2), gr.DownloadButton(value=combined), img, img2, combined]# + advanced_components
 
 
 

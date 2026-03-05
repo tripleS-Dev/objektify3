@@ -7,9 +7,14 @@ def simple_plus():
         with gr.Group('hidden', visible=False):
             pass
         with gr.Column():
-            artist = gr.Textbox(placeholder=config.simple_plus_placeholder['artist'], label='Artist', value=None, interactive=True, max_lines=1)
-            season = gr.Textbox(placeholder=config.simple_plus_placeholder['season'], label='Season', value=None, interactive=True, visible=True, max_lines=1)
-            classes = gr.Textbox(placeholder=config.simple_plus_placeholder['class'], label='Class', value=None, interactive=True, visible=True, max_lines=1)
+
+            with gr.Group():
+                with gr.Row():
+                    artist = gr.Textbox(placeholder=config.simple_plus_placeholder['artist'], label='Artist', value=None, interactive=True, visible=True, max_lines=1, min_width = 1)
+                    member = gr.Textbox(placeholder=config.simple_plus_placeholder['member'], label='Member', value=None, interactive=True, visible=True, max_lines=1, min_width = 1)
+                with gr.Row():
+                    season = gr.Textbox(placeholder=config.simple_plus_placeholder['season'], label='Season', value=None, interactive=True, visible=True, max_lines=1, min_width = 1)
+                    classes = gr.Textbox(placeholder=config.simple_plus_placeholder['class'], label='Class', value=None, interactive=True, visible=True, max_lines=1, min_width = 1)
 
             with gr.Group(visible=True) as colors:
                 with gr.Row():
@@ -17,7 +22,7 @@ def simple_plus():
                     ai_color_choices = ['Red', 'Pink', 'Purple', 'Blue', 'Cyan', 'Green', 'Yellow', 'Orange']
                     ai_color_shape_choices = ['Gradient', 'Wave']
 
-                    color_mode = gr.Radio(choices=color_mode_choices, label='Color Type', value=color_mode_choices[0])
+                    color_mode = gr.Radio(choices=color_mode_choices, label='Color Type', value=color_mode_choices[0], visible=False)
 
                 with gr.Group(visible=False) as ai_options:
                     with gr.Row(equal_height=True):
@@ -27,7 +32,7 @@ def simple_plus():
                             ai_generate = gr.Button(interactive=True, value='Generate', variant='primary')
 
                         with gr.Column(scale=1):
-                            ai_preview = gr.Image(interactive=False, visible=True, sources=None, label='Preview', elem_classes='preview-image', height=220, type='pil')
+                            ai_preview = gr.Image(interactive=False, visible=True, sources=None, label='Preview', elem_classes='preview-image', height=220, type='pil', buttons=[])
                             ai_sidebar = gr.Image(interactive=False, visible=False, type='pil')
                             ai_back = gr.Image(interactive=False, visible=False, type='pil')
 
@@ -39,20 +44,34 @@ def simple_plus():
                             ai_color_seed_type = gr.Radio(label='After generating', choices=["New random seed", "Keep current seed"], value="New random seed", interactive=True, visible=True)
 
                 with gr.Row(equal_height=True):
-                    background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#353eaf', min_width = 300)
-                    text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 300)
+                    background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#353eaf', min_width = 260) #width 너무 작으면 모바일에서 깨짐
+                    text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 260)
 
-            member = gr.Textbox(placeholder=config.simple_plus_placeholder['member'], label='Member', value=None, interactive=True, visible=False, max_lines=1)
+
+            with gr.Accordion(visible=True, open=False, label='Logos') as logos:
+
+                with gr.Row(equal_height=True):
+                    gr.Image(label='Top', type='filepath', interactive=True, format='png', sources=['upload'], min_width = 2)
+                    gr.Image(label='Side (Optional)', interactive=True, format='png', sources=['upload'], min_width = 2)
+
+            with gr.Accordion(visible=True, open=False, label='Sign') as sign:
+                with gr.Row(equal_height=True):
+                    gr.Image(label='Sign', type='filepath', interactive=True, format='png', sources=['upload'], min_width=240)
+                    sign_scale = gr.Slider(interactive=True, label='Scale', value=1, minimum=0.25, maximum=4, step=0.01)
+                        #with gr.Row(equal_height=True):
+                        #    sign_position_x = gr.Slider(interactive=True, label='X', value=50, minimum=0, maximum=100, step=1, min_width = 175)
+                        #    sign_position_y = gr.Slider(interactive=True, label='Y', value=50, minimum=0, maximum=100, step=1, min_width = 175)
 
             with gr.Accordion(visible=True, open=False, label='Numbering') as numbering:
                 with gr.Row():
-                    number = gr.Textbox(label='Number', value='', interactive=True, max_lines=1)
-                    alphabet = gr.Textbox(label='Alphabet', value='', interactive=True, max_lines=1)
-                    serial = gr.Textbox(label='Serial', value='', interactive=True, max_lines=1)
+                    number = gr.Textbox(label='Number', value='', interactive=True, max_lines=1, min_width = 1)
+                    alphabet = gr.Textbox(label='Alphabet', value='', interactive=True, max_lines=1, min_width = 1)
+                    serial = gr.Textbox(label='Serial', value='', interactive=True, max_lines=1, min_width = 1)
 
             with gr.Accordion(visible=True, open=False, label='QR code') as qrcoding:
-                with gr.Row():
-                    qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True, visible=True, max_lines=1)
+                with gr.Column():
+                    qr_code = gr.Textbox(label='QR code', value='https://objektify.xyz/', interactive=True, visible=True)
+                    qr_image = gr.Image(label='QR Image', interactive=True, format='png', sources=['upload'], height=200)
 
 
             gr.HTML(value=ads, visible=True)

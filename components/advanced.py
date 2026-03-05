@@ -21,7 +21,7 @@ def build_ui(mode: str):
 
 
 def advanced():
-    with gr.Tab('Advanced', id=2) as advanced:
+    with gr.Tab('Advanced', id=200, visible=False) as advanced:
         with gr.Group('hidden', visible=False):
             pass
 
