@@ -9,10 +9,10 @@ def color_change(seasons_select, class_select, bc, tc, color_json):
         return color_json
 
 
-    if not color_json.get(seasons_select):
-        color_json[seasons_select] = {}
+    if not color_json['seasons'].get(seasons_select):
+        color_json['seasons'][seasons_select] = {}
 
 
-    color_json[seasons_select][class_select] = [rgba_to_hex(bc), rgba_to_hex(tc)]
+    color_json['seasons'][seasons_select][class_select] = [rgba_to_hex(bc), rgba_to_hex(tc)]
 
     return color_json

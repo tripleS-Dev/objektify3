@@ -6,3 +6,4 @@ from .toggle_sidebar import toggle_sidebar
 from .footer import footer
 from .no_zoom_head import no_zoom_head
 from .ads import ads
+from .preset_info import preset_info
