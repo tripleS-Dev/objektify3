@@ -31,7 +31,7 @@ def others(image_box):
 
 
                 with gr.Step("Season", id=2):
-                    add_seasons = gr.Dropdown(multiselect=True, allow_custom_value=True, label='Seasons', info='Write All seasons\nFor example: Spring26, Summer26, 1st Album, 2nd Mini')
+                    add_seasons = gr.Dropdown(multiselect=True, allow_custom_value=True, label='Seasons', info='Write All seasons\nIf you use /, the characters following it will use an outlined font.\n\nFor example: Spring/26, Summer/26, 1st Album, 2nd Mini\n')
 
                     btn1 = gr.Button("Next", interactive=False)
                     btn1.click(lambda: gr.Walkthrough(selected=3), outputs=walkthrough)
@@ -52,10 +52,10 @@ def others(image_box):
                             bc = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#FFFFFF', min_width=260)  # width 너무 작으면 모바일에서 깨짐
                             tc = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width=260)
 
-            color_json = gr.JSON(visible=True, value={})
+            color_json = gr.JSON(visible=True, value={}, open=True)
 
             for colorpicker in [bc, tc]:
-                colorpicker.change(fn=color_change, inputs=[seasons_select, class_select, bc, tc, color_json], outputs=color_json)
+                colorpicker.input(fn=color_change, inputs=[seasons_select, class_select, bc, tc, color_json], outputs=color_json)
 
 
             class_name.change(fn=class_name_change, inputs=[seasons_select, class_name, color_json, bc, tc], outputs=[class_select, color_json])
