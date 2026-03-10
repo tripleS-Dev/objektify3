@@ -3,8 +3,8 @@ from html_elements import ads, preset_info
 import config
 from utils import check_blank
 from .others_utils import color_components, add_class, class_tab_visible, class_tab_list, color_change, by_season_init, \
-    class_name_change, season_select_change, class_select_select, json_update
-
+    class_name_change, season_select_change, class_select_select, json_update, all_seasons_have_class, sign_upload
+from .steps import make_sign
 
 def others(image_box):
     with gr.Tab('Preset Maker', id=2) as creator_tab:
@@ -16,29 +16,29 @@ def others(image_box):
                     gr.Markdown(preset_info)
 
                     btn0 = gr.Button("Start!", interactive=True)
-                    btn0.click(lambda: gr.Walkthrough(selected=1), outputs=walkthrough)
+                    btn0.click(lambda: gr.Walkthrough(selected=4), outputs=walkthrough)
 
                 with gr.Step("Artist", id=1):
                     group = gr.Textbox(label='Group Name', value='', interactive=True, min_width = 1)
-                    members = gr.Dropdown(multiselect=True, allow_custom_value=True, label='Members', info='Write All members')
+                    members = gr.Dropdown(multiselect=True, allow_custom_value=True, label='Members', info='Write All members', value=['aaa', 'bb'])
 
-                    btn0 = gr.Button("Next", interactive=False)
-                    btn0.click(lambda: gr.Walkthrough(selected=2), outputs=walkthrough)
+                    btn1 = gr.Button("Next", interactive=False)
+                    btn1.click(lambda: gr.Walkthrough(selected=2), outputs=walkthrough)
 
 
-                    group.change(fn=check_blank, inputs=[group, members], outputs=btn0)
-                    members.change(fn=check_blank, inputs=[group, members], outputs=btn0)
+                    group.change(fn=check_blank, inputs=[group, members], outputs=btn1)
+                    members.change(fn=check_blank, inputs=[group, members], outputs=btn1)
 
 
                 with gr.Step("Season", id=2):
                     add_seasons = gr.Dropdown(multiselect=True, allow_custom_value=True, label='Seasons', info='Write All seasons\nIf you use /, the characters following it will use an outlined font.\n\nFor example: Spring/26, Summer/26, 1st Album, 2nd Mini\n')
 
-                    btn1 = gr.Button("Next", interactive=False)
-                    btn1.click(lambda: gr.Walkthrough(selected=3), outputs=walkthrough)
+                    btn2 = gr.Button("Next", interactive=False)
+                    btn2.click(lambda: gr.Walkthrough(selected=3), outputs=walkthrough)
 
-                    add_seasons.change(fn=check_blank, inputs=add_seasons, outputs=btn1)
+                    add_seasons.change(fn=check_blank, inputs=add_seasons, outputs=btn2)
 
-                with gr.Step('By season', id=3) as by_season:
+                with gr.Step('Class', id=3) as by_season:
                     seasons_select = gr.Radio(choices=None, interactive=True, label='Season', info='Select season to edit')
 
 
@@ -52,10 +52,26 @@ def others(image_box):
                             bc = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#FFFFFF', min_width=260)  # width 너무 작으면 모바일에서 깨짐
                             tc = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width=260)
 
-            color_json = gr.JSON(visible=True, value={}, open=True)
+                    btn3 = gr.Button("Next", interactive=False)
+                    btn3.click(lambda: gr.Walkthrough(selected=4), outputs=walkthrough)
+
+
+                with gr.Step('Signs', id=4) as members_step:
+                    make_sign(walkthrough, members, members_step, sign_upload)
+
+                with gr.Step('Next', id=5):
+                    pass
+
+            color_json = gr.JSON(visible=False, value={}, open=True)
+            color_json.change(fn=all_seasons_have_class, inputs=color_json, outputs=btn3)
+
+
+
 
             for colorpicker in [bc, tc]:
                 colorpicker.input(fn=color_change, inputs=[seasons_select, class_select, bc, tc, color_json], outputs=color_json)
+
+
 
 
             class_name.change(fn=class_name_change, inputs=[seasons_select, class_name, color_json, bc, tc], outputs=[class_select, color_json])
@@ -66,6 +82,10 @@ def others(image_box):
 
             group.change(fn=json_update.group, inputs=[color_json, group], outputs=color_json)
             members.change(fn=json_update.members, inputs=[color_json, members], outputs=color_json)
+
+
+
+
 
     return
 

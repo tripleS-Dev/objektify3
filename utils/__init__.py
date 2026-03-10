@@ -19,3 +19,4 @@ from .apply_mask import apply_mask
 from .check_blank import check_blank
 from .color_change import _parse_rgb
 from .color_change import rgba_to_hex
+from .remove_signature_background import remove_signature_background

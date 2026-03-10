@@ -8,3 +8,5 @@ from .by_season_init import class_name_change
 from .season_select_change import season_select_change
 from .class_select_select import class_select_select
 from .json_update import *
+from .all_seasons_have_class import all_seasons_have_class
+from .sign_upload import sign_upload

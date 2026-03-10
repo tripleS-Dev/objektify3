@@ -16,6 +16,14 @@ body, html, .gradio-container, .gradio-container > .gr-block {
     z-index: 1000;
 }
 
+.sticky-image-small {
+    position: sticky;
+    top: 10px;
+    height: 25dvh;
+    z-index: 1000;
+}
+
+
 @media (min-width: 400px) and (max-width: 555px) {
     .sticky-image {
         margin-left: 4dvw;
