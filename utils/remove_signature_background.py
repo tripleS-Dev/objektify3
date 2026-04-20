@@ -133,11 +133,15 @@ def pad_with_edge_median_color(img: np.ndarray, scale: float = 1.5) -> np.ndarra
     return out
 
 def _load_rgb_and_alpha(
-    image: ArrayLike,
+    image: Union[str, Path, np.ndarray, Image.Image],
     input_order: str = "bgr",
     keep_existing_alpha: bool = True,
 ):
-    if isinstance(image, (str, Path)):
+    # 1) PIL.Image.Image 입력 처리
+    if isinstance(image, Image.Image):
+        pil = image
+        arr = np.array(pil)
+    elif isinstance(image, (str, Path)):
         # 기존 cv2.imread -> 유니코드 안전 버전으로 교체
         arr = _imread_unicode(image, cv2.IMREAD_UNCHANGED)
         input_order = "bgra" if (arr.ndim == 3 and arr.shape[2] == 4) else "bgr"
@@ -182,7 +186,7 @@ def _load_rgb_and_alpha(
 
 
 def remove_signature_background(
-    image: str,
+    image: Union[str, Path, np.ndarray, Image.Image],
     *,
     input_order: str = "bgr",
     work_max_side: int = 512,

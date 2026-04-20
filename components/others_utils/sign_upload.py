@@ -1,7 +1,7 @@
 import gradio as gr
 
 from PIL import Image
-from utils import remove_signature_background, paste_correctly, color_change
+from utils import remove_signature_background, paste_correctly, color_change, crop_transparent_padding
 from io import BytesIO
 from pathlib import Path
 from typing import List
@@ -13,7 +13,7 @@ BASE_DIR = str(Path(__file__).resolve().parent) + '/resources/'
 blank_img = Image.new('RGB', size=(1,1), color='black')
 
 
-def sign_upload(members, members_radio, sign_save: List[Image.Image], file: str, x_offset: float, y_offset: float, size: int, remove_bg: bool, progress_checkbox: List[str] | None):
+def sign_upload(color_json, members, members_radio, sign_save: List[Image.Image], file: str, x_offset: float, y_offset: float, size: int, remove_bg: bool, progress_checkbox: List[str] | None):
     if not file:
         return None, None, None, None
 
@@ -26,18 +26,23 @@ def sign_upload(members, members_radio, sign_save: List[Image.Image], file: str,
                 crop_transparent_padding(
                     Image.open(file) if not remove_bg else remove_signature_background(file)
                 )
-            )
+            , size)
 
-            img = composit_preview(img_raw, x_offset, y_offset, size).crop((0, 797, 1083, 729+797))
+            img, position = composit_preview(img_raw, x_offset, y_offset)
+            img = img.crop((0, 797, 1083, 729+797))
+
             btn = gr.Button(interactive=False, variant='secondary')
         case 'svg':
-            img_raw = fit_image(svg_to_rgba_array(file))
-            img = composit_preview(img_raw, x_offset, y_offset, size).crop((0, 797, 1083, 729+797))
+            img_raw = fit_image(svg_to_rgba_array(file), size)
+            img, position = composit_preview(img_raw, x_offset, y_offset)
+            img = img.crop((0, 797, 1083, 729+797))
+
             btn = gr.Button(interactive=False, variant='secondary')
         case _:
             gr.Info('Unknown file type')
             img = None
             img_raw = None
+            position = None
             btn = gr.Button(interactive=True, variant='primary')
 
 
@@ -58,7 +63,12 @@ def sign_upload(members, members_radio, sign_save: List[Image.Image], file: str,
 
     progress_checkbox.append(members_radio)
 
-    return btn, img, gr.Gallery(value=sign_save), gr.CheckboxGroup(value=progress_checkbox)
+    color_json['members'][members_radio] = {}
+    color_json['members'][members_radio]['sign'] = True
+    color_json['members'][members_radio]['position'] = [position[0], position[1]]
+
+
+    return btn, img, gr.Gallery(value=sign_save), gr.CheckboxGroup(value=progress_checkbox), color_json
 
 
 
@@ -82,7 +92,17 @@ def remove_partial_transparency(img: Image.Image) -> Image.Image:
     out.putdata(data)
     return out
 
-def composit_preview(img: Image.Image, x_offset: float, y_offset: float, multiple: int):
+
+def sign_resize(img: Image.Image, multiple: int):
+    width, height = img.size
+
+    new_width = int(width*multiple/100)
+    new_height = int(height*multiple/100)
+
+    img = img.resize((new_width, new_height), resample=Image.Resampling.LANCZOS)
+    return img
+
+def composit_preview(img: Image.Image, x_offset: float, y_offset: float):
     #img = remove_partial_transparency(img)
 
 
@@ -92,16 +112,11 @@ def composit_preview(img: Image.Image, x_offset: float, y_offset: float, multipl
 
     base = Image.open(BASE_DIR+'preview.png')
 
-    width, height = img.size
 
-    new_width = int(width*multiple/100)
-    new_height = int(height*multiple/100)
+    position = (int(68+((436-img.size[0])/2)+x_offset), int(1030+((293-img.size[1])/2)+y_offset))
+    img = paste_correctly(base, position, img)
 
-    img = img.resize((new_width, new_height), resample=Image.Resampling.LANCZOS)
-
-    img = paste_correctly(base, (int(68+((436-img.size[0])/2)+x_offset), int(1030+((293-img.size[1])/2)+y_offset)), img)
-
-    return img
+    return img, position
 
 
 def sign_change(file: str):
@@ -134,26 +149,8 @@ def sign_change(file: str):
     return gr.Button(variant='secondary', interactive=False), gr.Image(value=img)"""
 
 
-def crop_transparent_padding(img: Image.Image) -> Image.Image:
-    """
-    RGBA PIL 이미지에서 가장자리의 완전 투명한 패딩을 제거해서 반환.
 
-    - 입력 이미지가 RGBA가 아니면 RGBA로 변환
-    - 전부 투명한 이미지면 원본 크기의 빈 RGBA 이미지를 반환
-    """
-    if img.mode != "RGBA":
-        img = img.convert("RGBA")
-
-    alpha = img.getchannel("A")
-    bbox = alpha.getbbox()
-
-    if bbox is None:
-        # 전체가 투명한 경우
-        return Image.new("RGBA", (1, 1), (0, 0, 0, 0))
-
-    return img.crop(bbox)
-
-def fit_image(img: Image.Image, max_size=(436, 293)) -> Image.Image:
+def fit_image(img: Image.Image, multiple, max_size=(436, 293)) -> Image.Image:
     """
     Pillow 이미지 객체를 max_size 안에 비율 유지하며 맞춤.
 
@@ -168,9 +165,17 @@ def fit_image(img: Image.Image, max_size=(436, 293)) -> Image.Image:
     w, h = img.size
 
     scale = min(max_w / w, max_h / h)
-    new_size = (round(w * scale), round(h * scale))
+    new_size = (round(w * scale*multiple/100), round(h * scale*multiple/100))
 
-    return img.resize(new_size, Image.LANCZOS)
+
+    #width, height = img.size
+
+    #new_width = int(width*multiple/100)
+    #new_height = int(height*multiple/100)
+
+    #img = img.resize((new_width, new_height), resample=Image.Resampling.LANCZOS)
+
+    return img.resize(new_size, resample=Image.Resampling.LANCZOS)
 
 
 
