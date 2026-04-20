@@ -15,4 +15,6 @@ def hidden():
         temp_id = gr.Textbox(visible=False)
         cache_id = gr.Textbox(visible=False)
 
-    return input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id
+        first_act = gr.Checkbox(value=False, visible=False)
+
+    return input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act

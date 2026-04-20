@@ -9,7 +9,7 @@ from utils import on_load
 
 with gr.Blocks(title='Objektify') as demo:
 
-    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id = hidden()
+    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act = hidden()
 
     with gr.Row():
         with gr.Row(elem_classes='sticky-image') as image_box:
@@ -17,7 +17,7 @@ with gr.Blocks(title='Objektify') as demo:
 
         with gr.Column():
             with gr.Tabs() as tabs:
-                simple_components, others = simple(image_box)
+                simple_components, others = simple()
                 simple_plus_components = simple_plus()
                 others_tab(image_box)
                 #advanced_components = advanced()
@@ -30,11 +30,11 @@ with gr.Blocks(title='Objektify') as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar)
+    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box)
     events.simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components)
     #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
-    demo.load(fn=on_load, outputs=[simple_components[0], simple_plus_components[4]])
+    #demo.load(fn=on_load, outputs=simple_components[0])
 
 
 
@@ -51,5 +51,6 @@ parser.add_argument(
 args = parser.parse_args()
 port = args.port
 
-print(f"http://localhost:{port}")
-demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=port, head=no_zoom_head, pwa=True)
+if __name__ == "__main__":
+    print(f"http://localhost:{port}")
+    demo.launch(server_name='0.0.0.0', ssr_mode=False, css=css, theme=theme, js=animation, server_port=port, head=no_zoom_head, pwa=True)

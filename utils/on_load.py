@@ -7,4 +7,4 @@ def on_load():
     all_artists = list_artist_folders(True)
 
 
-    return gr.Dropdown(label='Artist', choices=all_artists), gr.Radio(visible=ai_enabled)
+    return gr.Radio(choices=all_artists)

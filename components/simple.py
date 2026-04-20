@@ -2,9 +2,8 @@ import gradio as gr
 from html_elements import ads
 
 
-def simple(image_box):
+def simple():
     with gr.Tab('Simple', id=0) as simple_tab:
-        simple_tab.select(fn=lambda : gr.Row(visible=True), outputs=image_box)
 
 
         with gr.Group('hidden', visible=False):
@@ -13,15 +12,15 @@ def simple(image_box):
         with gr.Column():
             artist = gr.Radio(label='Artist', choices=None, interactive=True)
             season = gr.Radio(label='Season', choices=None, interactive=True, visible=False)
-            classes = gr.Radio(label='Class', choices=None, interactive=True, visible=False)
+            classes = gr.Radio(label='Class', choices=None, interactive=True, visible=True)
 
             with gr.Group(visible=False) as colors:
                 with gr.Row(equal_height=True):
                     background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#E61E2B', min_width = 300)
                     text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 300)
 
-            member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=False, allow_custom_value=True)
-            unit = gr.CheckboxGroup(label='Members', choices=None, interactive=True, visible=False, type='value')
+            member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=True, allow_custom_value=True)
+            unit = gr.CheckboxGroup(label='Members', choices=None, interactive=True, visible=True, type='value')
 
             with gr.Accordion(visible=False, open=False, label='Numbering (expand to enable)') as numbering:
                 with gr.Row():
@@ -51,6 +50,6 @@ def simple(image_box):
 
     all_components = [artist, season, classes, colors, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
-    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share]
+    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab]
 
     return all_components, others
