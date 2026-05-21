@@ -10,3 +10,5 @@ from .class_select_select import class_select_select
 from .json_update import *
 from .all_seasons_have_class import all_seasons_have_class
 from .sign_upload import sign_upload
+from .make_default_preview import make_default_preview
+from .submit import submit

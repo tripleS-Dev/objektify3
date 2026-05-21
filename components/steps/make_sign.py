@@ -51,3 +51,5 @@ def make_sign(walkthrough, color_json, members, members_step, sign_upload):
             sign_file.change(fn=lambda x: ((gr.Button(variant='primary', interactive=True), None) if x else (gr.Button(variant='secondary', interactive=False), gr.Image(value=None))), inputs=sign_file, outputs=[apply_btn, sign_preview])
 
             apply_btn.click(fn=sign_upload, inputs=[color_json, members, members_radio, sign_save, sign_file, sing_x, sing_y, sing_size, remove_bg, progress_checkbox], outputs=[apply_btn, sign_preview, sign_save, progress_checkbox, color_json])
+
+            return sign_save

@@ -23,3 +23,9 @@ from .remove_signature_background import remove_signature_background
 from .svg_to_pil import svg_to_pil
 from .resize_keep_ratio import resize_keep_ratio
 from .crop_transparent_padding import crop_transparent_padding
+from .community_preset_enable import community_preset_enable
+from .extend_right_edge import extend_right_edge, extend_right_edge_inpaint
+from .resize_objekt import resize_objekt
+from .sort_seasons import sort_seasons
+from .text_assist_new import text_draw as text_draw_new
+from .to_int import to_int

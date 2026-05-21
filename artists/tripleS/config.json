@@ -5,7 +5,7 @@
   "top_logo": true,
   "qr_logo": true,
   "default": true,
-  "default_color": "#F4EFFF",
+  "default_color": ["#F4EFFF", "#000000"],
   "seasons": {
     "Atom01": {
       "First":   ["#FFDD00", "#000000"],

@@ -5,7 +5,7 @@
   "top_logo": true,
   "qr_logo": true,
   "default": true,
-  "default_color": "#ebebeb",
+  "default_color": ["#ebebeb", "#000000"],
   "seasons": {
     "Spring25": {
       "Event":   ["#2d3379", "#000000"],

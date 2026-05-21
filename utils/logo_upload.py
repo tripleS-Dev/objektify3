@@ -1,6 +1,6 @@
 
 import gradio as gr
-from PIL import Image
+from PIL import Image, ImageOps
 from pathlib import Path
 from utils import paste_correctly, svg_to_pil, resize_keep_ratio, remove_signature_background, color_change, \
     crop_transparent_padding
@@ -11,9 +11,9 @@ BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 img_format = ('.png', '.webp', 'jpg', 'jpeg')
 
 
-def top(top_logo: str, scale: int, remove_bg: bool):
+def top(color_json, top_logo: str, scale: int, remove_bg: bool):
     if not top_logo:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
 
     top_logo_preview_img = Image.open(f'{BASE_DIR}/top_logo_preview.png')
@@ -37,31 +37,32 @@ def top(top_logo: str, scale: int, remove_bg: bool):
 
 
     else:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
     top_logo_pil = color_change(top_logo_pil, '#FFFFFF')
     backside = paste_correctly(top_logo_preview_img, (57, 151), top_logo_pil)
 
-    return backside, top_logo_pil
+    color_json['top_logo'] = True
 
-def qr(qr_logo):
+
+    return backside, top_logo_pil, color_json
+
+def qr(color_json, qr_logo):
     if not qr_logo:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
 
     if qr_logo.lower().endswith(img_format):
         qr_logo_pil = Image.open(qr_logo)
 
-        if qr_logo_pil.size[0] >= qr_logo_pil.size[1]:
-            qr_logo_pil = resize_keep_ratio(qr_logo_pil, target_width=80)
-        else:
-            qr_logo_pil = resize_keep_ratio(qr_logo_pil, target_height=80)
+        qr_logo_pil = ImageOps.fit(qr_logo_pil, (80, 80))
+
 
     elif qr_logo.lower().endswith('.svg'):
         qr_logo_pil = svg_to_pil(qr_logo, target_width=80)
 
     else:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
 
 
@@ -71,12 +72,15 @@ def qr(qr_logo):
 
     backside = paste_correctly(qr_logo_preview_img, (235, 157), qr_logo_pil)
 
-    return backside, qr_logo_pil
+    color_json['qr_logo'] = True
 
 
-def side(side_logo, scale: int, remove_bg: bool):
+    return backside, qr_logo_pil, color_json
+
+
+def side(color_json, side_logo, scale: int, remove_bg: bool):
     if not side_logo:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
     if side_logo.lower().endswith(img_format):
         side_logo = Image.open(side_logo)
@@ -89,7 +93,7 @@ def side(side_logo, scale: int, remove_bg: bool):
     elif side_logo.lower().endswith('.svg'):
         side_logo_pil = svg_to_pil(side_logo, target_height=40+scale)
     else:
-        return gr.Image(), gr.Image()
+        return gr.Image(), gr.Image(), color_json
 
 
 
@@ -102,4 +106,6 @@ def side(side_logo, scale: int, remove_bg: bool):
 
     backside = paste_correctly(qr_logo_preview_img, (qr_logo_preview_img.size[0]-37-side_logo_temp.size[0], qr_logo_preview_img.size[1]-152-side_logo_temp.size[1]), side_logo_temp)
 
-    return backside, side_logo_pil
+    color_json['side_logo'] = True
+
+    return backside, side_logo_pil, color_json

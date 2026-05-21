@@ -1,5 +1,6 @@
 import os
 import json
+import pathlib
 
 
 def list_artist_folders(official=True):
@@ -12,7 +13,7 @@ def list_artist_folders(official=True):
                      False면 "official": false인 폴더만 반환
     :return: 조건을 만족하는 폴더 이름 리스트
     """
-    path = "./artists"
+    path = f"{pathlib.Path(__file__).resolve().parent.parent}/artists"
     result = []
 
     # artists 디렉토리가 없으면 빈 리스트 반환
@@ -44,6 +45,9 @@ def list_artist_folders(official=True):
         # config.json에 "official" 키가 있고, 값이 공식 여부(official 파라미터)와 일치하면 결과에 추가
         if config.get("official", False) is official:
             result.append(entry)
+        else:
+            #result.append(entry)
+            pass
 
     return result
 

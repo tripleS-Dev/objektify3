@@ -1,12 +1,13 @@
 import gradio as gr
 from html_elements import ads
+from utils import list_artist_folders, community_preset_enable
 
 
 def simple():
     with gr.Tab('Simple', id=0) as simple_tab:
 
 
-        with gr.Group('hidden', visible=False):
+        with gr.Group(visible=False):
             numbering_state = gr.Checkbox(value=False)
 
         with gr.Column():
@@ -16,8 +17,8 @@ def simple():
 
             with gr.Group(visible=False) as colors:
                 with gr.Row(equal_height=True):
-                    background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#E61E2B', min_width = 300)
-                    text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 300)
+                    background_color = gr.ColorPicker(label='Background Color', interactive=True, visible=True, value='#E61E2B', min_width = 260)
+                    text_color = gr.ColorPicker(label='Text Color', interactive=True, visible=True, value='#000000', min_width = 260)
 
             member = gr.Dropdown(label='Member', choices=None, interactive=True, visible=True, allow_custom_value=True)
             unit = gr.CheckboxGroup(label='Members', choices=None, interactive=True, visible=True, type='value')
@@ -42,14 +43,15 @@ def simple():
 
             with gr.Group():
                 enable_community_preset = gr.Checkbox(label='Enable community presets')
-                enable_community_preset.input()
-                gr.Dropdown(allow_custom_value=False, choices=None, interactive=True, visible=False)
+                community_preset = gr.Dropdown(allow_custom_value=False, choices=None, interactive=True, visible=True, multiselect=True, label='Presets to enable')
+                enable_community_preset.input(fn=community_preset_enable, inputs=enable_community_preset, outputs=community_preset)
+                community_preset.input(fn=lambda x: gr.Radio(choices=list_artist_folders(True)+x), inputs=community_preset, outputs=artist)
 
             gr.HTML(value=ads, visible=True)
 
 
     all_components = [artist, season, classes, colors, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
-    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab]
+    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab, community_preset]
 
     return all_components, others

@@ -8,3 +8,9 @@ simple_plus_placeholder = {
 comfyui_SERVER = "192.168.50.15:8188"
 
 ai_enabled=False
+
+
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+ARTIST_DIR = PROJECT_ROOT / "artists"

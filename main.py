@@ -5,6 +5,7 @@ from html_elements import css, theme, animation, footer, no_zoom_head
 import events
 import argparse
 from utils import on_load
+import generate.modhaus.classes
 
 
 with gr.Blocks(title='Objektify') as demo:
@@ -14,7 +15,7 @@ with gr.Blocks(title='Objektify') as demo:
     with gr.Row():
         with gr.Row(elem_classes='sticky-image') as image_box:
             input_image = gr.Gallery(type='filepath', interactive=True, format='png', show_label=False, elem_classes='sticky-image', preview=True, file_types=['.png', '.jpg', '.jpeg', '.webp'], object_fit='contain', height='100%', buttons=['download','fullscreen'], visible=True)
-
+            objekt = gr.State(generate.modhaus.classes.Objekt)
         with gr.Column():
             with gr.Tabs() as tabs:
                 simple_components, others = simple()
