@@ -31,7 +31,7 @@ with gr.Blocks(title='Objektify') as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.simple(temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box)
+    events.simple(objekt, temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box)
     events.simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components)
     #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
 
