@@ -5,9 +5,11 @@ from typing import Any
 import classes
 from PIL import Image, ImageOps
 from config import ARTIST_DIR
+from utils import get_json
+
 
 class Config:
-    def __init__(self, artist):
+    def __init__(self, artist, member):
         config_path = os.path.join(ARTIST_DIR, artist, 'config.json')
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
@@ -17,6 +19,20 @@ class Config:
             self.side_logo_img = Image.open(side_logo_path)
         else:
             self.side_logo_img = None
+
+        if self.config.get('top_logo', None):
+            top_logo_path = os.path.join(ARTIST_DIR, artist, 'top_logo.png')
+            self.top_logo_img = Image.open(top_logo_path)
+        else:
+            self.top_logo_img = None
+
+        if get_json(self.config, f'members.{member}.sign', False, bool):
+            sign_img_path = os.path.join(ARTIST_DIR, artist, 'signs', f'{member}.png')
+            self.sign_img = Image.open(sign_img_path)
+            self.sign_position = get_json(self.config, f'members.{member}.position', None, tuple)
+        else:
+            self.sign_img = None
+            self.sign_position = None
 
 def img_upload(
         img: Any|None,
@@ -41,24 +57,34 @@ def img_upload(
 
     if img:
         img = open_img(img)
-        objekt.set_raw_img(img)
+        objekt.front.round_corner()
+        objekt.front.resize()
+
+        objekt.front.set_raw_img(img)
 
 
-    objekt.round_corner()
-    objekt.resize()
+
 
     if group:
         config = Config(group)
 
         if config.side_logo_img:
-            objekt.set_group_logo_side(config.side_logo_img)
+            objekt.front.set_group_logo_side(config.side_logo_img)
 
-        objekt.draw_sidebar()
+        objekt.front.draw_sidebar()
 
         if any([number, serial]):
-            objekt.draw_serial()
+            objekt.front.draw_serial()
 
-        objekt.attach_sidebar()
+        objekt.front.attach_sidebar()
+
+
+        objekt.back(class_, season).attach_layout().draw_text().attach_qr_code()
+        if config.top_logo_img:
+            objekt.back.attach_top_logo(config.top_logo_img)
+
+        if config.sign_img:
+            objekt.back.attach_sign(config.sign_img, config.sign_position)
 
     return objekt
 
@@ -66,7 +92,7 @@ import gradio as gr
 
 if __name__ == "__main__":
     objekt = img_upload(None, 'JooBin', number='100', group='tripleS', alphabet='Z', serial='1')
-    objekt.show()
+    #objekt.front.show()
 
 def open_config(artist: str):
     config_path = os.path.join('./artists', artist, 'config.json')

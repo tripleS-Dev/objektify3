@@ -1,0 +1,12 @@
+{
+  "Helvetica_Neue_LT_Std_65_Medium-4.otf": {
+    "center": [0, -7],
+    "left": [0, 10.5],
+    "type": "byFontsize"
+  },
+  "Helvetica_Neue_LT_Std_65_Medium-4-outline.otf": {
+    "center": [0, -7],
+    "left": [0, 10.5],
+    "type": "byFontsize"
+  }
+}

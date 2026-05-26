@@ -67,6 +67,14 @@ def get_position(
 
     return int(x), int(y)
 
+
+import json
+
+with open(f"{BASE_DIR}/fonts/offsets.json", "r", encoding="utf-8") as f:
+    font_offset = json.load(f)
+
+
+
 def text_draw(
     img_size: Tuple[int, int],
     draw: ImageDraw.Draw,
@@ -78,6 +86,14 @@ def text_draw(
     variation: Optional[str] = None,
     align: Align = "left",
 ) -> Tuple[int, int]:
+
+    if font_offset.get(font_name, None):
+        if font_offset[font_name].get('type', None) == "byFontsize":
+            if font_offset[font_name].get(align):
+                position = (position[0], position[1] + round(font_size/font_offset[font_name][align][1]))
+
+
+
     font = ImageFont.truetype(f"{BASE_DIR}/fonts/{font_name}", font_size)
 
     if variation:
