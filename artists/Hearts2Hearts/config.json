@@ -1,0 +1,149 @@
+{
+    "official": true,
+    "side_logo": false,
+    "top_logo": true,
+    "qr_logo": true,
+    "default": true,
+    "name": "Hearts2Hearts",
+    "members": {
+        "Jiwoo": {
+            "sign": true,
+            "position": [
+                68,
+                1086
+            ]
+        },
+        "Carmen": {
+            "sign": true,
+            "position": [
+                103,
+                992
+            ]
+        },
+        "Yuha": {
+            "sign": true,
+            "position": [
+                88,
+                1045
+            ]
+        },
+        "Stella": {
+            "sign": true,
+            "position": [
+                68,
+                1049
+            ]
+        },
+        "Juun": {
+            "sign": true,
+            "position": [
+                68,
+                1055
+            ]
+        },
+        "A-NA": {
+            "sign": true,
+            "position": [
+                68,
+                1050
+            ]
+        },
+        "IAN": {
+            "sign": true,
+            "position": [
+                105,
+                1055
+            ]
+        },
+        "YE-ON": {
+            "sign": true,
+            "position": [
+                105,
+                1057
+            ]
+        }
+    },
+    "seasons": {
+        "Chase": {
+            "display": "Chase",
+            "Debut": [
+                "#bce0f4",
+                "#ffffff"
+            ],
+            "Fanmade": [
+                "@choose",
+                "#000000"
+            ],
+            "First": [
+                "#bce0f4",
+                "#ffffff"
+            ],
+            "Special": [
+                "#bce0f4",
+                "#000000"
+            ]
+        },
+        "STYLE": {
+            "display": "STYLE",
+            "First": [
+                "#c5edfc",
+                "#e484df"
+            ],
+            "Fanmade": [
+                "@choose",
+                "#000000"
+            ]
+        },
+        "Pretty Please": {
+            "display": "Pretty Please",
+            "First": [
+                "#061320",
+                "#b5d5eb"
+            ],
+            "Fanmade": [
+                "@choose",
+                "#000000"
+            ]
+        },
+        "FOCUS": {
+            "display": "FOCUS",
+            "First": [
+                "#83bef6",
+                "#ffffff"
+            ],
+            "Fanmade": [
+                "@choose",
+                "#000000"
+            ]
+        },
+        "RUDE!": {
+            "display": "RUDE!",
+            "First": [
+                "#6fb8f8",
+                "#ffffff"
+            ],
+            "Fanmade": [
+                "@choose",
+                "#000000"
+            ],
+            "WHAT??": [
+                "#ffaef9",
+                "#000000"
+            ],
+            "Soooo Rude": [
+                "#ff8b8b",
+                "#000000"
+            ]
+        }
+    },
+    "creator_name": "objektify",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$5MzNzLLDHFxB8XNLgNWm9g$ejmXBMhLN+bj6AsC8lk9oqPVQPlltc5RSsA50XlO7uo",
+    "contact": {
+        "discord": "hj_sss",
+        "email": "battlem.yt@gmail.com"
+    },
+    "default_color": [
+        "#6db3f1",
+        "#ffffff"
+    ]
+}

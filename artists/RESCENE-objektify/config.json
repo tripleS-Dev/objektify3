@@ -1,0 +1,133 @@
+{
+    "official": false,
+    "side_logo": false,
+    "top_logo": true,
+    "qr_logo": false,
+    "default": true,
+    "name": "RESCENE",
+    "members": {
+        "WONI": {
+            "sign": true,
+            "position": [
+                25,
+                1015
+            ]
+        },
+        "LIV": {
+            "sign": true,
+            "position": [
+                83,
+                1040
+            ]
+        },
+        "Minami": {
+            "sign": true,
+            "position": [
+                92,
+                1033
+            ]
+        },
+        "MAY": {
+            "sign": true,
+            "position": [
+                137,
+                1030
+            ]
+        },
+        "ZENA": {
+            "sign": true,
+            "position": [
+                68,
+                1030
+            ]
+        }
+    },
+    "seasons": {
+        "YoYo": {
+            "display": "YoYo",
+            "PRE-RELEASE": [
+                "#fe73cf",
+                "#ffffff"
+            ]
+        },
+        "Re:Scene": {
+            "display": "Re:Scene",
+            "1st SINGLE": [
+                "#da2127",
+                "#a3a2a9"
+            ]
+        },
+        "SCENEDROME": {
+            "display": "SCENEDROME",
+            "1st Mini": [
+                "#01acce",
+                "#f4bdd6"
+            ]
+        },
+        "Glow Up": {
+            "display": "Glow Up",
+            "2nd Mini": [
+                "#181a1b",
+                "#afa89d"
+            ]
+        },
+        "Dearest": {
+            "display": "Dearest",
+            "2nd Single": [
+                "#f6f9f2",
+                "#3d9c2e"
+            ]
+        },
+        "Heart Drop": {
+            "display": "Heart Drop",
+            "Pre-Release": [
+                "#e285b0",
+                "#f0e6f0"
+            ],
+            "Heart": [
+                "#e285b0",
+                "#f0e6f0"
+            ],
+            "Drop": [
+                "#e285b0",
+                "#f0e6f0"
+            ]
+        },
+        "lip bomb": {
+            "display": "lip bomb",
+            "3rd Mini": [
+                "#f7fbf9",
+                "#fb689e"
+            ]
+        },
+        "Runaway": {
+            "display": "Runaway",
+            "1st Digital": [
+                "#2c4b43",
+                "#c6c3be"
+            ],
+            "Runaway": [
+                "#0d5744",
+                "#c4c2b9"
+            ],
+            "Run": [
+                "#2c4b43",
+                "#dfded6"
+            ],
+            "Away": [
+                "#2c4b43",
+                "#dfded0"
+            ]
+        }
+    },
+    "creator_name": "objektify",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$q3qa7ice6uBdCdNLCN/UNA$KXzpKHCJ9hFmWghazp4EMPzfr6rjqrZpPqVa7t5Q3V4",
+    "contact": {
+        "discord": "hj_sss",
+        "email": "battlem.yt@gmail.com"
+    },
+    "default_color": [
+        "#2c4b43",
+        "#dfdedc"
+    ]
+}

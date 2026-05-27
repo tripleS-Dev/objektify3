@@ -85,6 +85,7 @@ def text_draw(
     txt_color: Optional[Union[str, tuple]] = None,
     variation: Optional[str] = None,
     align: Align = "left",
+    measure_only=False
 ) -> Tuple[int, int]:
 
     if font_offset.get(font_name, None):
@@ -105,8 +106,9 @@ def text_draw(
     if isinstance(txt_color, str):
         txt_color = hex2rgb(txt_color)
 
-    position_fixed = get_position(align, position, img_size, font, txt)
-    draw.text(position_fixed, txt, fill=txt_color, font=font)
+    if not measure_only:
+        position_fixed = get_position(align, position, img_size, font, txt)
+        draw.text(position_fixed, txt, fill=txt_color, font=font)
 
     txt_bbox = font.getbbox(txt)
     txt_width = txt_bbox[2] - txt_bbox[0]

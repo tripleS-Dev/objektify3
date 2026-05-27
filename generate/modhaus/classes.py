@@ -125,7 +125,11 @@ class Objekt:
     # ------------------------------------------------------------------
     # 공통 sidebar 관련
     # ------------------------------------------------------------------
-    def set_group_logo_side(self, group_logo_side: Image.Image) -> Objekt:
+    def set_group_logo_side(self, group_logo_side: Optional[Image.Image]) -> Objekt:
+        if group_logo_side is None:
+            self.group_logo_side = None
+            return self
+
         self.group_logo_side = group_logo_side.convert("RGBA").copy()
         return self
 
@@ -133,6 +137,7 @@ class Objekt:
         self,
         use_background: bool = False,
         include_serial: bool = True,
+        base_img: Optional[Image.Image] = None,
     ) -> Image.Image:
         """
         Sidebar 텍스트 레이어 생성.
@@ -145,10 +150,17 @@ class Objekt:
             sidebar.png와 같은 크기의 완전 투명한 캔버스에 텍스트만 그림
             => 뒷면용
         """
-        sidebar_base = self.assets.image("sidebar.png")
+        sidebar_base = (
+            base_img.convert("RGBA").copy()
+            if base_img is not None
+            else self.assets.image("sidebar.png")
+        )
 
         if use_background:
-            sidebar = color_change(sidebar_base, self.theme.background_color)
+            if base_img is None:
+                sidebar = color_change(sidebar_base, self.theme.background_color)
+            else:
+                sidebar = sidebar_base
         else:
             sidebar = Image.new("RGBA", sidebar_base.size, (0, 0, 0, 0))
 
@@ -171,13 +183,18 @@ class Objekt:
 
         # 오른쪽: group_logo_side 또는 group_name
         if self.group_logo_side:
-            x = width - margin_x - self.group_logo_side.size[0]
-            y = (height - self.group_logo_side.size[1]) / 2
+            group_logo_side = color_change(
+                self.group_logo_side,
+                self.theme.text_color,
+            )
+            x = width - margin_x - group_logo_side.size[0]
+            y = (height - group_logo_side.size[1]) / 2
             sidebar = paste_correctly(
                 sidebar,
                 to_int(x, y),
-                self.group_logo_side,
+                group_logo_side,
             )
+            draw = ImageDraw.Draw(sidebar)
         elif self.meta.group_name:
             text_draw(
                 sidebar.size,
@@ -194,26 +211,76 @@ class Objekt:
             center = (width / 2, height / 2)
 
             if self.meta.number and self.meta.serial_text:
-                text_draw(
-                    sidebar.size,
-                    draw,
-                    center,
-                    self.assets.font("Inter-Bold-5.ttf"),
-                    54,
-                    self.meta.number_text,
-                    self.theme.text_color,
-                    align=["right", "cap_center"],
+                def draw_text(pos_x=0, pos_y=0, measure_only=False):
+                    space = 0.025 * center[0]
+
+                    number_font = self.assets.font("Inter-Bold-5.ttf")
+                    serial_font = self.assets.font("MatrixSSK_custom.ttf")
+
+                    # 1) 먼저 number_text의 크기 측정
+                    number_w, number_h = text_draw(
+                        sidebar.size,
+                        draw,
+                        to_int(pos_x, pos_y),
+                        number_font,
+                        54,
+                        self.meta.number_text,
+                        self.theme.text_color,
+                        align=["left", "cap_center"],
+                        measure_only=True,
+                    )
+
+                    # 2) serial_text 크기 측정
+                    serial_w, serial_h = text_draw(
+                        sidebar.size,
+                        draw,
+                        to_int(pos_x + number_w + space, pos_y),
+                        serial_font,
+                        60,
+                        self.meta.serial_text,
+                        self.theme.text_color,
+                        align=["left", "cap_center"],
+                        measure_only=True,
+                    )
+
+                    total_w = number_w + space + serial_w
+                    total_h = max(number_h, serial_h)
+
+                    if measure_only:
+                        return total_w, total_h
+
+                    # 3) 실제 출력
+                    text_draw(
+                        sidebar.size,
+                        draw,
+                        to_int(pos_x, pos_y),
+                        number_font,
+                        54,
+                        self.meta.number_text,
+                        self.theme.text_color,
+                        align=["left", "cap_center"],
+                    )
+
+                    text_draw(
+                        sidebar.size,
+                        draw,
+                        to_int(pos_x + number_w + space, pos_y),
+                        serial_font,
+                        60,
+                        self.meta.serial_text,
+                        self.theme.text_color,
+                        align=["left", "cap_center"],
+                    )
+
+                    return total_w, total_h
+
+                text_w, text_h = draw_text(measure_only=True)
+
+                draw_text(
+                    center[0] - text_w / 2,
+                    center[1],
                 )
-                text_draw(
-                    sidebar.size,
-                    draw,
-                    center,
-                    self.assets.font("MatrixSSK_custom.ttf"),
-                    60,
-                    self.meta.serial_text,
-                    self.theme.text_color,
-                    align=["left", "cap_center"],
-                )
+
             elif self.meta.number:
                 text_draw(
                     sidebar.size,
@@ -347,9 +414,12 @@ class BackRenderer:
         self.back_ready_img = color_change(self.back_ready_img, color)
         return self
 
-    def attach_layout(self) -> BackRenderer:
-        inside = self.owner.assets.image("inside.png")
-        inside = color_change(inside, self.owner.theme.background_color)
+    def attach_layout(self, inside_img: Optional[Image.Image] = None) -> BackRenderer:
+        if inside_img is None:
+            inside = self.owner.assets.image("inside.png")
+            inside = color_change(inside, self.owner.theme.background_color)
+        else:
+            inside = self._prepare_inside_img(inside_img)
 
         self.back_ready_img = paste_correctly(
             self.back_ready_img,
@@ -366,6 +436,17 @@ class BackRenderer:
             layout,
         )
         return self
+
+    def _prepare_inside_img(
+        self,
+        inside_img: Image.Image,
+        size: tuple[int, int] = (1083, 1673),
+        mask_filename: str = "blank_alpha.png",
+    ) -> Image.Image:
+        inside = inside_img.convert("RGBA").copy()
+        if inside.size != size:
+            inside = ImageOps.fit(inside, size)
+        return apply_mask(inside, self.owner.assets.path(mask_filename))
 
     def draw_text(self) -> BackRenderer:
         draw = ImageDraw.Draw(self.back_ready_img)
@@ -465,7 +546,23 @@ class BackRenderer:
         if not value:
             return
 
-        font_size = 126 if len(value) < 12 else 110
+        if len(value) <= 11:
+            if sum(1 for ch in value if ch.isupper()) >= 6:
+                font_size = 110
+            else:
+                font_size = 126
+
+        elif len(value) == 12:
+            if sum(1 for ch in value if ch.isupper()) >= 6:
+                font_size = 100
+            else:
+                font_size = 110
+        elif len(value) >= 13:
+            font_size = 100
+        else:
+            font_size = 126
+
+
         text_draw(
             self.back_ready_img.size,
             draw,

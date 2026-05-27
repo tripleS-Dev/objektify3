@@ -2,7 +2,6 @@ import gradio as gr
 
 def hidden():
     with gr.Group('hidden', visible=False):
-        input_image_raw = gr.Image(type='pil', image_mode='RGBA', visible=False)
         true = gr.Checkbox(value=True, visible=False)
         false = gr.Checkbox(value=False, visible=False)
 
@@ -17,4 +16,4 @@ def hidden():
 
         first_act = gr.Checkbox(value=False, visible=False)
 
-    return input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act
+    return true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act

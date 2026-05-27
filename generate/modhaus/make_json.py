@@ -10,7 +10,7 @@ from pathlib import Path
 from utils import get_kr_time, paste_correctly, get_json, simple2advanced, save_log_json
 
 
-def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, gr_background_color=None, gr_text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
+def make_json(temp_id, cache_id, source_image, artist, season=None, class_=None, gr_background_color=None, gr_text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
     if not artist:
         return
 
@@ -51,10 +51,10 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
     else:
         side_logo_img = None
 
-    if not input_image_raw:
+    if not source_image:
         if config.get('default', None):
             input_image_path = os.path.join('./artists', artist, 'default.png')
-            input_image_raw = Image.open(input_image_path)
+            source_image = Image.open(input_image_path)
 
     if get_json(config, f'members.{member}.sign', False):
         sign_path = os.path.join('./artists', artist, f'signs/{member}.png')
@@ -164,7 +164,7 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
     #print(data)
     krtime = get_kr_time()
 
-    # 메타데이터로 저장할 인수들을 딕셔너리로 구성 (input_image_raw 제외)
+    # 메타데이터로 저장할 인수들을 딕셔너리로 구성 (source_image 제외)
     meta_dict = {
         "artist": str(artist),
         "season": str(season),

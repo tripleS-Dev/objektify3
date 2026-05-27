@@ -5,6 +5,9 @@ from PIL import Image
 
 
 def season_load(artist_name):
+    if not artist_name:
+        return gr.Radio(), gr.Radio(), gr.Dropdown(), gr.CheckboxGroup(), gr.Accordion(), '100', 'Z', '1', gr.Accordion(), gr.Textbox()
+
     config_path = os.path.join('./artists', artist_name, 'config.json')
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)

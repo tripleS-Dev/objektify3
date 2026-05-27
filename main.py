@@ -10,7 +10,7 @@ import generate.modhaus.classes
 
 with gr.Blocks(title='Objektify') as demo:
 
-    input_image_raw, true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act = hidden()
+    true, false, front_raw, back_raw, combined_raw, raws, temp_id, cache_id, first_act = hidden()
 
     with gr.Row():
         with gr.Row(elem_classes='sticky-image') as image_box:
@@ -31,9 +31,8 @@ with gr.Blocks(title='Objektify') as demo:
     download_bar, download_share_buttons = download_share_sidebar(raws, others[5])
 
 
-    events.simple(objekt, temp_id, cache_id, input_image_raw, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box)
-    events.simple_plus(temp_id, cache_id, input_image_raw, simple_plus_components)
-    #events.advanced(input_image_raw, input_image, advanced_components, true, false, demo, difficult)
+    events.simple(objekt, temp_id, cache_id, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box, simple_plus_components)
+    events.simple_plus(objekt, temp_id, cache_id, input_image, simple_plus_components, download_share_buttons, raws)
 
     #demo.load(fn=on_load, outputs=simple_components[0])
 

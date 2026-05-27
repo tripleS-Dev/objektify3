@@ -1,0 +1,121 @@
+{
+    "official": false,
+    "side_logo": false,
+    "top_logo": true,
+    "qr_logo": false,
+    "default": true,
+    "name": "KiiiKiii",
+    "members": {
+        "Jiyu": {
+            "sign": true,
+            "position": [
+                96,
+                1030
+            ]
+        },
+        "LeeSol": {
+            "sign": true,
+            "position": [
+                68,
+                1058
+            ]
+        },
+        "SUI": {
+            "sign": true,
+            "position": [
+                86,
+                1041
+            ]
+        },
+        "HAUM": {
+            "sign": true,
+            "position": [
+                187,
+                1061
+            ]
+        },
+        "KYA": {
+            "sign": true,
+            "position": [
+                68,
+                1058
+            ]
+        }
+    },
+    "seasons": {
+        "I DO ME": {
+            "display": "I DO ME",
+            "Pre-Release": [
+                "#67c3cf",
+                "#684ead"
+            ]
+        },
+        "UNCUT GEM": {
+            "display": "UNCUT GEM",
+            "EP 1": [
+                "#4d61de",
+                "#ffffff"
+            ],
+            "1st EP": [
+                "#4d61de",
+                "#ffffff"
+            ],
+            "DEBUT": [
+                "#4d61de",
+                "#ffffff"
+            ]
+        },
+        "DANCING ALONE": {
+            "display": "DANCING ALONE",
+            "Digital Single": [
+                "#fe2581",
+                "#ffffff"
+            ],
+            "DANCING": [
+                "#fe2581",
+                "#ffffff"
+            ],
+            "ALONE": [
+                "#fe2581",
+                "#ffffff"
+            ]
+        },
+        "Delulu Pack": {
+            "display": "Delulu Pack",
+            "EP 2": [
+                "#f74766",
+                "#ffffff"
+            ],
+            "2nd EP": [
+                "#f74766",
+                "#ffffff"
+            ],
+            "New Era": [
+                "#f74766",
+                "#ffffff"
+            ],
+            "Era": [
+                "#f74766",
+                "#ffffff"
+            ],
+            "Error": [
+                "#f74766",
+                "#ffffff"
+            ],
+            "404": [
+                "#f74766",
+                "#ffffff"
+            ]
+        }
+    },
+    "creator_name": "objektify",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$0jB+3/LYVNAp+phMFZ84rg$sPKD2wTd/xT8Jlw/UXLA6Ym4KyuG2xA3yQHINyMt53Y",
+    "contact": {
+        "discord": "hj_sss",
+        "email": "battlem.yt@gmail.com"
+    },
+    "default_color": [
+        "#f74766",
+        "#ffffff"
+    ]
+}

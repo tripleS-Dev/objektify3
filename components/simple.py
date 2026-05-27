@@ -1,6 +1,6 @@
 import gradio as gr
 from html_elements import ads
-from utils import list_artist_folders, community_preset_enable
+from utils import list_artist_folders, community_preset_enable, on_load
 
 
 def simple():
@@ -43,15 +43,15 @@ def simple():
 
             with gr.Group():
                 enable_community_preset = gr.Checkbox(label='Enable community presets')
-                community_preset = gr.Dropdown(allow_custom_value=False, choices=None, interactive=True, visible=True, multiselect=True, label='Presets to enable')
+                community_preset = gr.Dropdown(allow_custom_value=False, choices=None, interactive=True, visible=True, multiselect=False, label='Presets to enable')
                 enable_community_preset.input(fn=community_preset_enable, inputs=enable_community_preset, outputs=community_preset)
-                community_preset.input(fn=lambda x: gr.Radio(choices=list_artist_folders(True)+x), inputs=community_preset, outputs=artist)
+                community_preset_input = community_preset.input(fn=lambda x, y: on_load(x, y, y), inputs=[enable_community_preset, community_preset], outputs=artist)
 
             gr.HTML(value=ads, visible=True)
 
 
     all_components = [artist, season, classes, colors, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code]
 
-    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab, community_preset]
+    others = [download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab, enable_community_preset, community_preset, community_preset_input]
 
     return all_components, others

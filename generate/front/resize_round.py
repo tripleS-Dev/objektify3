@@ -12,7 +12,7 @@ import gradio as gr
 BASE_DIR = str(Path(__file__).resolve().parent) + '/resources'
 
 
-def resize_round(img, cache_id=None, input_image_raw=None, artist=None, season = None, class_ = None, gr_background_color=None, gr_text_color=None, member = None, unit=None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
+def resize_round(img, cache_id=None, source_image=None, artist=None, season = None, class_ = None, gr_background_color=None, gr_text_color=None, member = None, unit=None, numbering_state = None, number = None, alphabet = None, serial = None, qr_code = None):
     if len(img) >= 4 and "objektify-combined" in img[2][0]:
         if len(img) >= 5:
             gr.Info("You can only upload one image.", duration=5)

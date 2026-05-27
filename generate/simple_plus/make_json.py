@@ -10,7 +10,7 @@ from pathlib import Path
 from utils import get_kr_time, paste_correctly, get_json, simple2advanced, save_log_json
 
 
-def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=None, background_color=None, text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
+def make_json(temp_id, cache_id, source_image, artist, season=None, class_=None, background_color=None, text_color=None, member=None, unit=None, numbering_state=None, number=None, alphabet=None, serial=None, qr_code=None):
 
     gen_started_at_epoch_us = time.time_ns() // 1_000  # Unix epoch in microseconds
 
@@ -72,7 +72,7 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
     #print(data)
     krtime = get_kr_time()
 
-    # 메타데이터로 저장할 인수들을 딕셔너리로 구성 (input_image_raw 제외)
+    # 메타데이터로 저장할 인수들을 딕셔너리로 구성 (source_image 제외)
     meta_dict = {
         "artist": str(artist),
         "season": str(season),
@@ -88,7 +88,7 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
     save_log_json(data, temp_id, f"{krtime}.json")
 
 
-    img = front(meta_dict, krtime, input_image_raw, data, side_logo_img, side_bar_img)
+    img = front(meta_dict, krtime, source_image, data, side_logo_img, side_bar_img)
     img2 = back(meta_dict, krtime, data, back_img, side_logo_img, top_logo_img, sign_img, sign_position, qr_logo_img)
 
     combined = combine(meta_dict, krtime, img, img2)
@@ -100,8 +100,8 @@ def make_json(temp_id, cache_id, input_image_raw, artist, season=None, class_=No
 
 
 
-def front(meta_dict, krtime, input_image_raw, data, side_logo_img, side_bar_img):
-    img = generate_front(input_image_raw, data, side_logo_img, side_bar_img)
+def front(meta_dict, krtime, source_image, data, side_logo_img, side_bar_img):
+    img = generate_front(source_image, data, side_logo_img, side_bar_img)
     meta = PngImagePlugin.PngInfo()
     meta.add_text('objektify', 'V3')
     meta.add_text('aspect', 'front')

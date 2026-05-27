@@ -1,68 +1,267 @@
 import gradio as gr
-from generate.front import resize_round, make_json
-from utils import season_load, paste_correctly, class_load, member_load
+
+from generate.modhaus.simple_callbacks import (
+    sync_simple_to_simple_plus,
+    update_simple_objekt,
+    upload_simple_objekt,
+)
 from html_elements import toggle_sidebar
-from utils import on_load
-from modhaus.img_upload import img_upload
+from utils import class_load, member_load, on_load, season_load
 
 
-
-def simple(objekt, temp_id, cache_id=None, input_image_raw=None, input_image=None, simple_components=None, others=None, true=None, false=None, demo=None, tabs=None, download_share_buttons=None, raws = None, download_bar = None, first_act = None, image_box = None):
+def simple(
+    objekt,
+    temp_id,
+    cache_id=None,
+    input_image=None,
+    simple_components=None,
+    others=None,
+    true=None,
+    false=None,
+    demo=None,
+    tabs=None,
+    download_share_buttons=None,
+    raws=None,
+    download_bar=None,
+    first_act=None,
+    image_box=None,
+    simple_plus_components=None,
+):
     artist, season, classes, colors, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code = simple_components
-    download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab, community_preset = others
+    download_btn, share_btn, go_advanced, numbering, qrcoding, go_download_share, simple_tab, enable_community_preset, community_preset, community_preset_input = others
     download_front, download_back, download_combine, share_front, share_back, share_combined = download_share_buttons
-
     front_raw, back_raw, combined_raw = raws
 
-    go_advanced.click(fn=lambda: gr.Tabs(selected=1), inputs=None, outputs=tabs)
-    #go_download_share.click(fn=lambda : [gr.Sidebar(open=True), gr.Button(variant="secondary")], outputs=[download_bar, go_download_share])
+    render_inputs = [
+        objekt,
+        temp_id,
+        cache_id,
+        input_image,
+        artist,
+        season,
+        classes,
+        background_color,
+        text_color,
+        member,
+        unit,
+        numbering_state,
+        number,
+        alphabet,
+        serial,
+        qr_code,
+    ]
+    render_outputs = [
+        objekt,
+        temp_id,
+        cache_id,
+        input_image,
+        download_front,
+        download_back,
+        download_combine,
+        front_raw,
+        back_raw,
+        combined_raw,
+    ]
 
+    simple_plus_sync_outputs = []
+    if simple_plus_components:
+        (
+            sp_artist,
+            sp_season,
+            sp_classes,
+            sp_colors,
+            sp_color_mode,
+            sp_background_color,
+            sp_image_options,
+            sp_raw_sidebar,
+            sp_raw_back,
+            sp_ai_options,
+            sp_ai_color,
+            sp_ai_color_shape,
+            sp_ai_color_seed,
+            sp_ai_color_seed_type,
+            sp_ai_generate,
+            sp_ai_preview,
+            sp_ai_sidebar,
+            sp_ai_back,
+            sp_text_color,
+            sp_outline_color,
+            sp_member,
+            sp_logos,
+            sp_top_logo,
+            sp_side_logo,
+            sp_sign,
+            sp_sign_img,
+            sp_sign_x,
+            sp_sign_y,
+            sp_sign_scale,
+            sp_numbering,
+            sp_number,
+            sp_alphabet,
+            sp_serial,
+            sp_qrcoding,
+            sp_qr_code,
+            sp_qr_logo,
+        ) = simple_plus_components
+        simple_plus_sync_outputs = [
+            sp_artist,
+            sp_season,
+            sp_classes,
+            sp_color_mode,
+            sp_background_color,
+            sp_image_options,
+            sp_raw_sidebar,
+            sp_raw_back,
+            sp_ai_options,
+            sp_ai_preview,
+            sp_ai_sidebar,
+            sp_ai_back,
+            sp_text_color,
+            sp_outline_color,
+            sp_member,
+            sp_top_logo,
+            sp_side_logo,
+            sp_sign_img,
+            sp_sign_x,
+            sp_sign_y,
+            sp_sign_scale,
+            sp_numbering,
+            sp_number,
+            sp_alphabet,
+            sp_serial,
+            sp_qrcoding,
+            sp_qr_code,
+            sp_qr_logo,
+        ]
+
+    def sync_after(event):
+        if not simple_plus_sync_outputs:
+            return event
+        return event.then(
+            fn=sync_simple_to_simple_plus,
+            inputs=objekt,
+            outputs=simple_plus_sync_outputs,
+        )
+
+    go_advanced.click(fn=lambda: gr.Tabs(selected=1), inputs=None, outputs=tabs)
     go_download_share.click(fn=None, inputs=[], outputs=[], js=toggle_sidebar)
 
-    all_components = [temp_id, cache_id, input_image_raw, artist, season, classes, background_color, text_color, member, unit, numbering_state, number, alphabet, serial, qr_code]
+    sync_after(input_image.upload(
+        fn=upload_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
-    if not any(component == '' for component in [input_image_raw, artist]):
-        for component in all_components:
-            if component == artist:
-                component.input(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-            elif component in [member, number, alphabet, serial, qr_code]:
-                component.blur(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
+    sync_after(artist.input(
+        fn=season_load,
+        inputs=artist,
+        outputs=[season, classes, member, unit, numbering, number, alphabet, serial, qrcoding, qr_code],
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
-            elif component in [background_color, text_color]: # pip install https://gradio-pypi-previews.s3.amazonaws.com/f46c77b7509f1266e09c11beff24a79650e2d4fd/gradio-6.5.1-py3-none-any.whl
-                # https://github.com/gradio-app/gradio/issues/12896
-                component.release(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-
-            elif component == numbering_state:
-                component.change(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-
-            elif component == unit:
-                component.input(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-
-            elif component in [temp_id, cache_id]:
-                pass
-
-            else:
-                component.input(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-
-    input_image.upload(fn=img_upload, inputs=[objekt, input_image, member, artist, background_color, text_color, number, alphabet, serial, classes, season, qr_code], outputs=[objekt, input_image])
-
-
-    numbering.expand(fn=lambda : gr.Checkbox(value=True), outputs=numbering_state)
-    numbering.collapse(fn=lambda : gr.Checkbox(value=False), outputs=numbering_state)
-
-    artist.change(fn=season_load, inputs=artist,
-                  outputs=[season, classes, member, unit, numbering, number, alphabet, serial, qrcoding, qr_code])
-    season.change(fn=class_load, inputs=[artist, season, classes], outputs=classes)
-    classes.input(fn=member_load, inputs=[artist, season, classes], outputs=[member, unit, colors])
-    member.input(fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
-                 outputs=[numbering, qrcoding])
-    unit.input(fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
-                 outputs=[numbering, qrcoding])
+    sync_after(community_preset_input.then(
+        fn=season_load,
+        inputs=artist,
+        outputs=[season, classes, member, unit, numbering, number, alphabet, serial, qrcoding, qr_code],
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
 
+    sync_after(season.input(
+        fn=class_load,
+        inputs=[artist, season, classes],
+        outputs=classes,
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
-    #https://github.com/gradio-app/gradio/issues/13302
-    simple_tab.select(fn=lambda x: (gr.Row(visible=True), on_load(), gr.Radio(visible=False), gr.Dropdown(visible=False), gr.Radio(visible=False), gr.Dropdown(visible=False)) if not x else (gr.Row(visible=True), on_load(), gr.Radio(), gr.Dropdown(), gr.Radio(), gr.Dropdown()), inputs=[first_act], outputs=[image_box, artist, classes, member, unit, community_preset])
+    sync_after(classes.input(
+        fn=member_load,
+        inputs=[artist, season, classes],
+        outputs=[member, unit, colors],
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
+    sync_after(member.input(
+        fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
+        outputs=[numbering, qrcoding],
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
 
-    #input_image.change(fn=lambda x: print(x), inputs=input_image)
+    sync_after(unit.input(
+        fn=lambda: (gr.Group(visible=True), gr.Group(visible=True)),
+        outputs=[numbering, qrcoding],
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
+
+    for component in [number, alphabet, serial, qr_code]:
+        sync_after(component.input(
+            fn=update_simple_objekt,
+            inputs=render_inputs,
+            outputs=render_outputs,
+        ))
+
+    for component in [background_color, text_color]:
+        sync_after(component.release(
+            fn=update_simple_objekt,
+            inputs=render_inputs,
+            outputs=render_outputs,
+        ))
+
+    sync_after(numbering.expand(
+        fn=lambda: gr.Checkbox(value=True),
+        outputs=numbering_state,
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
+    sync_after(numbering.collapse(
+        fn=lambda: gr.Checkbox(value=False),
+        outputs=numbering_state,
+    ).then(
+        fn=update_simple_objekt,
+        inputs=render_inputs,
+        outputs=render_outputs,
+    ))
+
+    simple_tab.select(
+        fn=lambda x, y, z: (
+            gr.Row(visible=True),
+            on_load(),
+            gr.Radio(visible=False),
+            gr.Dropdown(visible=False),
+            gr.Radio(visible=False),
+            gr.Dropdown(visible=False),
+            gr.Checkbox(value=True)
+        )
+        if not x
+        else (
+            gr.Row(visible=True),
+            on_load(y, z),
+            gr.Radio(),
+            gr.Dropdown(),
+            gr.Radio(),
+            gr.Dropdown(),
+            gr.Checkbox()
+        ),
+        inputs=[first_act, enable_community_preset, community_preset],
+        outputs=[image_box, artist, classes, member, unit, community_preset, first_act],
+    )
