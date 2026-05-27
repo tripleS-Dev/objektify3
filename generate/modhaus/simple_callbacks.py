@@ -23,6 +23,7 @@ from utils import (
 DEFAULT_QR_CODE = "https://objektify.xyz/"
 DEFAULT_QR_CAPTION = "https://objektify.xyz"
 CACHE_DIR = Path("./cache")
+FRONT_SIDEBAR_SIZE = (1479, 113)
 
 
 @dataclass(slots=True)
@@ -348,6 +349,7 @@ def update_simple_plus_objekt(
         sidebar_img = _coerce_image(ai_sidebar)
         back_img = _coerce_image(ai_back)
         appearance_background = "ai"
+    sidebar_img = _fit_front_sidebar_image(sidebar_img)
 
     top_logo_img = _coerce_image(top_logo)
     side_logo_img = _coerce_image(side_logo)
@@ -718,6 +720,12 @@ def _coerce_image(value: Any) -> Optional[Image.Image]:
         with Image.open(value) as img:
             return img.convert("RGBA").copy()
     return None
+
+
+def _fit_front_sidebar_image(image: Optional[Image.Image]) -> Optional[Image.Image]:
+    if image is None or image.size == FRONT_SIDEBAR_SIZE:
+        return image
+    return ImageOps.fit(image, FRONT_SIDEBAR_SIZE, method=Image.Resampling.LANCZOS)
 
 
 def _scale_image(image: Image.Image, scale: Any) -> Image.Image:

@@ -48,7 +48,7 @@ def simple_plus():
                     )
 
             with gr.Group(visible=True) as colors:
-                color_mode_choices = ["Static"]
+                color_mode_choices = ["Static", "Image"]
                 ai_color_choices = ["Red", "Pink", "Purple", "Blue", "Cyan", "Green", "Yellow", "Orange"]
                 ai_color_shape_choices = ["Gradient", "Wave"]
 
