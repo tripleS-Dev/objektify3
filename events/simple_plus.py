@@ -1,3 +1,5 @@
+import gradio as gr
+
 from generate.modhaus.simple_callbacks import (
     simple_plus_color_mode_input,
     update_simple_plus_objekt,
@@ -13,6 +15,8 @@ def simple_plus(
     simple_plus_components,
     download_share_buttons,
     raws,
+    image_box,
+    simple_plus_tab
 ):
     (
         artist,
@@ -144,3 +148,9 @@ def simple_plus(
             inputs=render_inputs,
             outputs=render_outputs,
         )
+
+
+    simple_plus_tab.select(
+        fn=lambda : (gr.Row(visible=True)),
+        outputs=[image_box],
+    )

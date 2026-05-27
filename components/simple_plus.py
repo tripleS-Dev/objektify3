@@ -5,7 +5,7 @@ from html_elements import ads
 
 
 def simple_plus():
-    with gr.Tab("Simple+", id=1):
+    with gr.Tab("Simple+", id=1) as simple_plus_tab:
         with gr.Column():
             with gr.Group():
                 with gr.Row():
@@ -229,7 +229,7 @@ def simple_plus():
 
             gr.HTML(value=ads, visible=True)
 
-    return [
+    return simple_plus_tab, [
         artist,
         season,
         classes,

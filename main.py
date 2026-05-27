@@ -19,7 +19,7 @@ with gr.Blocks(title='Objektify') as demo:
         with gr.Column():
             with gr.Tabs() as tabs:
                 simple_components, others = simple()
-                simple_plus_components = simple_plus()
+                simple_plus_tab, simple_plus_components = simple_plus()
                 others_tab(image_box)
                 #advanced_components = advanced()
             gr.Markdown(value="\n\n\n\n")
@@ -32,7 +32,7 @@ with gr.Blocks(title='Objektify') as demo:
 
 
     events.simple(objekt, temp_id, cache_id, input_image, simple_components, others, true, false, demo, tabs, download_share_buttons, raws, download_bar, first_act, image_box, simple_plus_components)
-    events.simple_plus(objekt, temp_id, cache_id, input_image, simple_plus_components, download_share_buttons, raws)
+    events.simple_plus(objekt, temp_id, cache_id, input_image, simple_plus_components, download_share_buttons, raws, image_box, simple_plus_tab)
 
     #demo.load(fn=on_load, outputs=simple_components[0])
     #demo.load(fn=lambda : gr.Info('New features are here:\nSimple Plus (Full Edit) and Preset Maker are now available!', duration=5))
