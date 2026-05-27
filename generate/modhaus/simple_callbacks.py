@@ -62,7 +62,7 @@ def open_gallery_image(gallery_value: Any) -> Optional[GalleryImage]:
         selected = items[3]
     elif len(items) >= 2:
         gr.Info("You can only upload one image.", duration=5)
-        selected = items[0]
+        selected = items[1]
     else:
         selected = items[0]
 
@@ -488,7 +488,24 @@ def _update_simple_objekt(
     force_gallery: bool,
 ) -> list[Any]:
     if not artist:
-        return _empty_outputs(objekt, temp_id, cache_id, gallery_value)
+        return _update_no_artist_objekt(
+            objekt,
+            temp_id,
+            cache_id,
+            gallery_value,
+            season,
+            class_,
+            background_color,
+            text_color,
+            member,
+            unit,
+            numbering_state,
+            number,
+            alphabet,
+            serial,
+            qr_code,
+            force_gallery,
+        )
 
     temp_id = temp_id or get_kr_time()
     resolved = resolve_artist_config(
@@ -777,6 +794,115 @@ def _set_front_image(objekt: Objekt, image: Image.Image) -> None:
     objekt.front.set_raw_img(image).resize().round_corner()
 
 
+def _update_no_artist_objekt(
+    objekt: Optional[Objekt],
+    temp_id: Optional[str],
+    cache_id: Optional[str],
+    gallery_value: Any,
+    season: Optional[str],
+    class_: Optional[str],
+    background_color: Optional[str],
+    text_color: Optional[str],
+    member: Optional[str],
+    unit: Any,
+    numbering_state: Optional[bool],
+    number: Optional[str],
+    alphabet: Optional[str],
+    serial: Optional[str],
+    qr_code: Optional[str],
+    force_gallery: bool,
+) -> list[Any]:
+    temp_id = temp_id or get_kr_time()
+
+    if not isinstance(objekt, Objekt):
+        objekt = Objekt(
+            text_color=text_color or "#000000",
+            background_color=background_color or "#FFFFFF",
+            artist_name=member or "",
+            group_name="",
+            number=number or "",
+            alphabet=alphabet or "",
+            serial=serial or None,
+        )
+
+    opened_gallery = open_gallery_image(gallery_value) if force_gallery else None
+    if opened_gallery is None:
+        existing_items = _gallery_items(gallery_value)
+        front_path = existing_items[0] if existing_items else None
+        return [
+            objekt,
+            temp_id,
+            cache_id,
+            gallery_value,
+            gr.DownloadButton(value=front_path),
+            gr.DownloadButton(value=None),
+            gr.DownloadButton(value=None),
+            front_path,
+            None,
+            None,
+        ]
+
+    _copy_original_front_image(opened_gallery.source_path, temp_id)
+    _set_front_image(objekt, opened_gallery.image)
+    objekt._simple_raw_source = "user"
+    objekt._simple_default_artist = None
+
+    raw_values = [
+        None,
+        season,
+        class_,
+        member,
+        unit,
+        numbering_state,
+        number,
+        alphabet,
+        serial,
+        qr_code,
+    ]
+    data = {
+        "artist": None,
+        "mode": "front-only",
+        "source": "upload",
+        "raw": raw_values,
+        "generation": {
+            "started_at_epoch_us": time.time_ns() // 1_000,
+            "timezone": "Asia/Seoul",
+        },
+    }
+    meta_dict = {
+        "artist": "None",
+        "season": str(season),
+        "class": str(class_),
+        "member": str(member),
+        "numbering_state": str(numbering_state),
+        "number": str(number),
+        "alphabet": str(alphabet),
+        "serial": str(serial),
+        "qr_code": str(qr_code),
+        "mode": "front-only",
+        "source": "upload",
+    }
+
+    if cache_id:
+        _remove_cached_images(cache_id)
+    cache_id = get_kr_time()
+    save_log_json(data, temp_id, f"{cache_id}.json")
+    front_path = _save_front_preview(objekt, cache_id, meta_dict)
+
+    return [
+        objekt,
+        temp_id,
+        cache_id,
+        [front_path],
+        gr.DownloadButton(value=front_path),
+        gr.DownloadButton(value=None),
+        gr.DownloadButton(value=None),
+        front_path,
+        None,
+        None,
+    ]
+
+
 def _member_text(member: Optional[str], unit: Any, class_: Optional[str]) -> str:
     if class_ != "Unit":
         return member or ""
@@ -823,6 +949,21 @@ def _save_images(
     return front_path.as_posix(), back_path.as_posix(), combined_path.as_posix()
 
 
+def _save_front_preview(
+    objekt: Objekt,
+    cache_id: str,
+    meta_dict: dict[str, str],
+) -> str:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    front_path = CACHE_DIR / f"objektify-front-{cache_id}.png"
+    objekt.front_ready_img.save(
+        front_path,
+        pnginfo=_png_meta(meta_dict, "front", mode="front-only"),
+    )
+    return front_path.as_posix()
+
+
 def _png_meta(
     meta_dict: dict[str, str],
     aspect: str,
@@ -836,23 +977,3 @@ def _png_meta(
     for key, value in meta_dict.items():
         meta.add_text(key, value)
     return meta
-
-
-def _empty_outputs(
-    objekt: Optional[Objekt],
-    temp_id: Optional[str],
-    cache_id: Optional[str],
-    gallery_value: Any,
-) -> list[Any]:
-    return [
-        objekt,
-        temp_id,
-        cache_id,
-        gallery_value,
-        gr.DownloadButton(value=None),
-        gr.DownloadButton(value=None),
-        gr.DownloadButton(value=None),
-        None,
-        None,
-        None,
-    ]
