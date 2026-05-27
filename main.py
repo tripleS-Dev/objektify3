@@ -35,6 +35,7 @@ with gr.Blocks(title='Objektify') as demo:
     events.simple_plus(objekt, temp_id, cache_id, input_image, simple_plus_components, download_share_buttons, raws)
 
     #demo.load(fn=on_load, outputs=simple_components[0])
+    demo.load(fn=lambda : gr.Info('New features are here:\nSimple Plus (Full Edit) and Preset Maker are now available!', duration=5))
 
 
 
