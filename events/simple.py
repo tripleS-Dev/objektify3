@@ -242,27 +242,35 @@ def simple(
         outputs=render_outputs,
     ))
 
-    simple_tab.select(
-        fn=lambda x, y, z: (
+
+    def on_simple_tab_select(first_act_value, enable_custom_preset, community_preset_value):
+        if not first_act_value:
+            gr.Info(
+                "New features are here:\nSimple Plus (Full Edit) and Preset Maker are now available!",
+                duration=5,
+            )
+            return (
+                gr.Row(visible=True),
+                on_load(),
+                gr.Radio(visible=False),
+                gr.Dropdown(visible=False),
+                gr.CheckboxGroup(visible=False),
+                gr.Dropdown(visible=False),
+                gr.Checkbox(value=True),
+            )
+
+        return (
             gr.Row(visible=True),
-            on_load(),
-            gr.Radio(visible=False),
-            gr.Dropdown(visible=False),
-            gr.Radio(visible=False),
-            gr.Dropdown(visible=False),
-            gr.Checkbox(value=True),
-            gr.Info('New features are here:\nSimple Plus (Full Edit) and Preset Maker are now available!', duration=5)
+            on_load(enable_custom_preset, community_preset_value),
+            gr.Radio(),
+            gr.Dropdown(),
+            gr.CheckboxGroup(),
+            gr.Dropdown(),
+            gr.Checkbox(),
         )
-        if not x
-        else (
-            gr.Row(visible=True),
-            on_load(y, z),
-            gr.Radio(),
-            gr.Dropdown(),
-            gr.Radio(),
-            gr.Dropdown(),
-            gr.Checkbox()
-        ),
+
+    simple_tab.select(
+        fn=on_simple_tab_select,
         inputs=[first_act, enable_community_preset, community_preset],
         outputs=[image_box, artist, classes, member, unit, community_preset, first_act],
     )
