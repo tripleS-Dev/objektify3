@@ -250,7 +250,8 @@ def simple(
             gr.Dropdown(visible=False),
             gr.Radio(visible=False),
             gr.Dropdown(visible=False),
-            gr.Checkbox(value=True)
+            gr.Checkbox(value=True),
+            gr.Info('New features are here:\nSimple Plus (Full Edit) and Preset Maker are now available!', duration=5)
         )
         if not x
         else (
