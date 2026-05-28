@@ -52,6 +52,14 @@
       "Premier": ["premier", "#FFFFFF"],
       "Unit": ["#c1a95f", "#000000"],
       "display": "Binary/02"
+    },
+    "Cream02": {
+      "First":   ["#FF7777", "#000000"],
+      "Double":   ["@choose", "#000000"],
+      "Special": ["special", "#000000"],
+      "Premier": ["premier", "#FFFFFF"],
+      "Unit": ["#c1a95f", "#000000"],
+      "display": "Cream/02"
     }
   },
   "members": {
