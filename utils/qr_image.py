@@ -4,7 +4,7 @@ from PIL import Image
 from utils import paste_correctly
 
 
-def qr_image(url, logo: Image.Image=None):
+def qr_image(url, logo: Image.Image=None, size=(313, 311)):
     # Generate QR code with a smaller border
     qr = qrcode.QRCode(
         version=1,
@@ -18,7 +18,7 @@ def qr_image(url, logo: Image.Image=None):
     # Create an image from the QR Code instance
     qr_img = qr.make_image(fill_color="black", back_color="white").convert('RGBA')
 
-    qr_img = qr_img.resize((313,311), Image.Resampling.LANCZOS)
+    qr_img = qr_img.resize(size, Image.Resampling.LANCZOS)
 
 
     if logo:

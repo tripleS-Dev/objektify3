@@ -81,12 +81,15 @@ def text_draw(
     position: tuple,
     font_name: str,
     font_size: int,
-    txt: str,
+    txt: str|None,
     txt_color: Optional[Union[str, tuple]] = None,
     variation: Optional[str] = None,
     align: Align = "left",
     measure_only=False
 ) -> Tuple[int, int]:
+    if not txt:
+        return 0,0
+
 
     if font_offset.get(font_name, None):
         if font_offset[font_name].get('type', None) == "byFontsize":
