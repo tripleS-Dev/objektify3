@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import time
 from dataclasses import dataclass, field
@@ -15,6 +16,7 @@ from config import ARTIST_DIR
 
 
 ph = PasswordHasher()
+LAYOUT_ASSET_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
 @dataclass
@@ -37,12 +39,19 @@ class PresetMember:
 
 
 @dataclass
+class PresetLayoutAsset:
+    front: Optional[Image.Image] = None
+    back: Optional[Image.Image] = None
+
+
+@dataclass
 class PresetAssets:
     default_img: Optional[Image.Image] = None
     top_logo: Optional[Image.Image] = None
     qr_logo: Optional[Image.Image] = None
     side_logo: Optional[Image.Image] = None
     signs: dict[str, Image.Image] = field(default_factory=dict)
+    layout_assets: dict[str, PresetLayoutAsset] = field(default_factory=dict)
 
     def clone_image(self, attr: str) -> Optional[Image.Image]:
         image = getattr(self, attr)
@@ -110,6 +119,14 @@ class Preset:
             sign = _open_image(signs_dir / f"{member_name}.png")
             if sign is not None:
                 preset.assets.signs[member_name] = sign
+
+        for asset_key in preset.referenced_layout_asset_keys():
+            if not is_valid_layout_asset_key(asset_key):
+                continue
+            preset.assets.layout_assets[asset_key] = PresetLayoutAsset(
+                front=_open_image(base_path / asset_key / "front.png"),
+                back=_open_image(base_path / asset_key / "back.png"),
+            )
 
         return preset
 
@@ -222,6 +239,7 @@ class Preset:
             errors.append("Every season needs at least one class.")
         if len(self.default_color) != 2 or not all(self.default_color):
             errors.append("Default colors are required.")
+        errors.extend(self.layout_asset_errors())
         if self.source_folder and not self.verified_for_edit:
             errors.append("Editing this preset requires password verification.")
         if not self.source_folder and not password:
@@ -238,6 +256,30 @@ class Preset:
             if not any(key != "display" for key in season):
                 return False
         return True
+
+    def referenced_layout_asset_keys(self) -> set[str]:
+        asset_keys: set[str] = set()
+        for season in self.seasons.values():
+            if not isinstance(season, dict):
+                continue
+            for class_name, color_spec in season.items():
+                if class_name == "display":
+                    continue
+                token = background_token(color_spec)
+                if token and is_layout_asset_token(token):
+                    asset_keys.add(token)
+        return asset_keys
+
+    def layout_asset_errors(self) -> list[str]:
+        errors = []
+        for asset_key in sorted(self.referenced_layout_asset_keys()):
+            if not is_valid_layout_asset_key(asset_key):
+                errors.append(f"Layout asset key is invalid: {asset_key}")
+                continue
+            asset = self.assets.layout_assets.get(asset_key)
+            if asset is None or asset.front is None or asset.back is None:
+                errors.append(f"Layout asset '{asset_key}' needs both front.png and back.png.")
+        return errors
 
     def sign_status_rows(self) -> list[list[Any]]:
         rows = []
@@ -311,12 +353,36 @@ class Preset:
         for member_name, image in self.assets.signs.items():
             _save_image(image, signs_dir / f"{member_name}.png")
 
+        for asset_key in sorted(self.referenced_layout_asset_keys()):
+            asset = self.assets.layout_assets.get(asset_key)
+            if asset is None:
+                continue
+            asset_dir = target_path / asset_key
+            asset_dir.mkdir(exist_ok=True)
+            _save_image(asset.front, asset_dir / "front.png")
+            _save_image(asset.back, asset_dir / "back.png")
+
 
 def season_display_to_key(season: str) -> str:
     if "/" not in season:
         return season
     left, right = season.rsplit("/", 1)
     return f"{left}{right}"
+
+
+def background_token(color_spec: Any) -> Optional[str]:
+    if not isinstance(color_spec, (list, tuple)) or not color_spec:
+        return None
+    return str(color_spec[0]).strip()
+
+
+def is_layout_asset_token(token: str) -> bool:
+    return bool(token) and not token.startswith("#") and not token.startswith("@")
+
+
+def is_valid_layout_asset_key(value: str) -> bool:
+    value = str(value or "").strip()
+    return bool(value) and value not in {".", ".."} and bool(LAYOUT_ASSET_KEY_RE.fullmatch(value))
 
 
 def _safe_name(value: str) -> str:
@@ -333,4 +399,5 @@ def _open_image(path: Path) -> Optional[Image.Image]:
 def _save_image(image: Optional[Image.Image], path: Path) -> None:
     if image is None:
         return
+    path.parent.mkdir(parents=True, exist_ok=True)
     image.convert("RGBA").save(path)

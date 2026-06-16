@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Optional
 
@@ -7,16 +8,14 @@ import gradio as gr
 from PIL import Image
 
 from config import ARTIST_DIR
-from generate.modhaus.preset import Preset, PresetMember
+from generate.modhaus.preset import Preset, PresetLayoutAsset, PresetMember, is_valid_layout_asset_key
 from utils import (
     color_change as recolor_image,
     crop_transparent_padding,
     list_artist_folders,
     paste_correctly,
     remove_signature_background,
-    resize_keep_ratio,
     rgba_to_hex,
-    svg_to_pil,
 )
 from utils.logo_upload import qr as qr_logo_upload
 from utils.logo_upload import side as side_logo_upload
@@ -29,6 +28,29 @@ from .sign_upload import composit_preview, fit_image, svg_to_rgba_array
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 RESOURCE_DIR = PROJECT_ROOT / "utils" / "resources"
 SIGN_STATUS_HEADERS = ["Member", "Uploaded", "Position", "Updated"]
+BACKGROUND_SOURCE_STATIC = "Static Color"
+BACKGROUND_SOURCE_CHOOSE = "User Choose (@choose)"
+BACKGROUND_SOURCE_LAYOUT = "Layout Asset"
+BACKGROUND_SOURCE_CHOICES = [
+    BACKGROUND_SOURCE_STATIC,
+    BACKGROUND_SOURCE_CHOOSE,
+    BACKGROUND_SOURCE_LAYOUT,
+]
+PLAIN_LAYOUT_ASSET_DEFAULTS = {"special", "premier"}
+
+
+def layout_asset_dropdown_choices(preset: Optional[Preset] = None) -> list[str]:
+    choices = _available_layout_asset_sources()
+    if isinstance(preset, Preset):
+        for key in sorted(preset.referenced_layout_asset_keys() | set(preset.assets.layout_assets.keys())):
+            if key not in PLAIN_LAYOUT_ASSET_DEFAULTS and key not in choices:
+                choices.append(key)
+    return choices
+
+
+def layout_asset_dropdown_value(preset: Optional[Preset] = None) -> Optional[str]:
+    choices = layout_asset_dropdown_choices(preset)
+    return choices[0] if choices else None
 
 
 def preset_debug_config(preset: Optional[Preset]) -> dict[str, Any]:
@@ -46,13 +68,19 @@ def status_markdown(preset: Optional[Preset]) -> str:
         len([key for key in season.keys() if key != "display"])
         for season in preset.seasons.values()
     )
+    layout_keys = sorted(preset.referenced_layout_asset_keys())
+    layout_errors = preset.layout_asset_errors()
     sign_count = sum(
         1
         for name, member in preset.members.items()
         if member.sign and name in preset.assets.signs
     )
     folder = preset.folder_name if preset.name and preset.creator_name else preset.source_folder or "-"
-    save_ready = "Yes" if preset.name and preset.creator_name and preset.members and preset.all_seasons_have_class() else "No"
+    save_ready = (
+        "Yes"
+        if preset.name and preset.creator_name and preset.members and preset.all_seasons_have_class() and not layout_errors
+        else "No"
+    )
 
     return "\n".join(
         [
@@ -61,6 +89,7 @@ def status_markdown(preset: Optional[Preset]) -> str:
             f"- Creator: `{preset.creator_name or '-'}`",
             f"- Members: {len(preset.members)}",
             f"- Seasons / Classes: {season_count} / {class_count}",
+            f"- Layout assets: {len(layout_keys)} ({len(layout_errors)} missing)",
             f"- Signs: {sign_count} / {len(preset.members)}",
             f"- Logos: top={_yesno(preset.has_top_logo)}, qr={_yesno(preset.has_qr_logo)}, side={_yesno(preset.has_side_logo)}",
             f"- Default image: {_yesno(preset.has_default_img)}",
@@ -108,6 +137,13 @@ def create_new_preset():
         gr.Radio(choices=[], value=None),
         gr.Dropdown(choices=[], value=[], multiselect=True, allow_custom_value=True),
         gr.Radio(choices=[], value=None),
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=BACKGROUND_SOURCE_STATIC),
+        gr.ColorPicker(value="#FFFFFF", visible=True),
+        gr.Group(visible=False),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(), value=layout_asset_dropdown_value(), allow_custom_value=True),
+        gr.Image(value=None, visible=True),
+        gr.Image(value=None, visible=True),
+        gr.ColorPicker(value="#000000", visible=True),
         gr.Radio(choices=[], value=None),
         gr.Textbox(value=""),
         gr.Textbox(value=""),
@@ -118,6 +154,7 @@ def create_new_preset():
         gr.Image(value=_resource("qr_logo_preview.png")),
         gr.Image(value=None),
         gr.Image(value=_resource("front_preview.png")),
+        gr.Button(interactive=False, variant="secondary"),
         gr.Button(interactive=False, variant="secondary"),
         status,
         signs,
@@ -145,6 +182,7 @@ def load_existing_preset(current: Optional[Preset], folder: str, password: str):
     selected_season = season_keys[0] if season_keys else None
     class_values = _classes_for_season(preset, selected_season)
     selected_class = class_values[0] if class_values else None
+    source, bc, asset_key, front_layout, back_layout, tc = _class_appearance(preset, selected_season, selected_class)
     default_side, default_text = _default_colors(preset)
     default_preview, _ = make_default_preview(default_side, default_text, preset.assets.default_img, "Center of container")
 
@@ -157,6 +195,13 @@ def load_existing_preset(current: Optional[Preset], folder: str, password: str):
         gr.Radio(choices=season_keys, value=selected_season),
         gr.Dropdown(choices=class_values, value=class_values, multiselect=True, allow_custom_value=True),
         gr.Radio(choices=class_values, value=selected_class),
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=bc, visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(preset), value=asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=tc, visible=source == BACKGROUND_SOURCE_STATIC),
         gr.Radio(choices=list(preset.members.keys()), value=list(preset.members.keys())[0] if preset.members else None),
         gr.Textbox(value=preset.creator_name),
         gr.Textbox(value=preset.contact.get("discord")),
@@ -168,6 +213,7 @@ def load_existing_preset(current: Optional[Preset], folder: str, password: str):
         gr.Image(value=_side_preview(preset.assets.side_logo)),
         gr.Image(value=default_preview),
         _artist_next_button(preset),
+        _class_next_button(preset),
         status,
         signs,
         config,
@@ -196,13 +242,23 @@ def set_seasons(preset: Optional[Preset], seasons: list[str] | None):
     season_keys = list(preset.seasons.keys())
     selected_season = season_keys[0] if season_keys else None
     class_values = _classes_for_season(preset, selected_season)
+    selected_class = class_values[0] if class_values else None
+    source, bc, asset_key, front_layout, back_layout, tc = _class_appearance(preset, selected_season, selected_class)
     status, signs, config = panel_outputs(preset)
     return (
         preset,
         gr.Button(interactive=bool(season_keys), variant="primary" if season_keys else "secondary"),
         gr.Radio(choices=season_keys, value=selected_season),
         gr.Dropdown(choices=class_values, value=class_values, multiselect=True, allow_custom_value=True),
-        gr.Radio(choices=class_values, value=class_values[0] if class_values else None),
+        gr.Radio(choices=class_values, value=selected_class),
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=bc, visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(preset), value=asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=tc, visible=source == BACKGROUND_SOURCE_STATIC),
+        _class_next_button(preset),
         status,
         signs,
         config,
@@ -213,25 +269,52 @@ def select_season(preset: Optional[Preset], season_key: Optional[str]):
     preset = _preset(preset)
     class_values = _classes_for_season(preset, season_key)
     selected_class = class_values[0] if class_values else None
-    bc, tc = _class_colors(preset, season_key, selected_class)
+    source, bc, asset_key, front_layout, back_layout, tc = _class_appearance(preset, season_key, selected_class)
     return (
         gr.Dropdown(choices=class_values, value=class_values, multiselect=True, allow_custom_value=True),
         gr.Radio(choices=class_values, value=selected_class),
-        gr.ColorPicker(value=bc),
-        gr.ColorPicker(value=tc),
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=bc, visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(preset), value=asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=tc, visible=source == BACKGROUND_SOURCE_STATIC),
     )
 
 
-def set_classes(preset: Optional[Preset], season_key: Optional[str], class_names: list[str] | None, bc: str, tc: str):
+def set_classes(
+    preset: Optional[Preset],
+    season_key: Optional[str],
+    class_names: list[str] | None,
+    background_source: str,
+    asset_key: str,
+    bc: str,
+    tc: str,
+):
     preset = _preset(preset)
-    preset.set_classes(season_key, class_names, (rgba_to_hex(bc), rgba_to_hex(tc)))
+    preset.set_classes(season_key, class_names, _default_class_spec(background_source, asset_key, bc, tc))
+    if _normalize_background_source(background_source) == BACKGROUND_SOURCE_LAYOUT:
+        token, source_asset, _ = _layout_asset_selection(asset_key)
+        if token and source_asset is not None:
+            preset.assets.layout_assets[token] = source_asset
     class_values = _classes_for_season(preset, season_key)
     selected_class = class_values[0] if class_values else None
+    source, selected_bc, selected_asset_key, front_layout, back_layout, selected_tc = _class_appearance(preset, season_key, selected_class)
+    if source == BACKGROUND_SOURCE_LAYOUT and _valid_layout_asset_selection(asset_key):
+        selected_asset_key = asset_key
     status, signs, config = panel_outputs(preset)
     return (
         preset,
         gr.Radio(choices=class_values, value=selected_class),
-        gr.Button(interactive=preset.all_seasons_have_class(), variant="primary" if preset.all_seasons_have_class() else "secondary"),
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=selected_bc, visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(preset), value=selected_asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=selected_tc, visible=source == BACKGROUND_SOURCE_STATIC),
+        _class_next_button(preset),
         status,
         signs,
         config,
@@ -240,20 +323,182 @@ def set_classes(preset: Optional[Preset], season_key: Optional[str], class_names
 
 def select_class(preset: Optional[Preset], season_key: Optional[str], class_name: Optional[str]):
     preset = _preset(preset)
-    bc, tc = _class_colors(preset, season_key, class_name)
-    return gr.ColorPicker(value=bc), gr.ColorPicker(value=tc)
+    source, bc, asset_key, front_layout, back_layout, tc = _class_appearance(preset, season_key, class_name)
+    return (
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=bc, visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=layout_asset_dropdown_choices(preset), value=asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=tc, visible=source == BACKGROUND_SOURCE_STATIC),
+    )
 
 
-def set_class_color(preset: Optional[Preset], season_key: Optional[str], class_name: Optional[str], bc: str, tc: str):
+def set_class_source(
+    preset: Optional[Preset],
+    season_key: Optional[str],
+    class_name: Optional[str],
+    background_source: str,
+    asset_key: str,
+    bc: str,
+    tc: str,
+):
+    return _set_class_appearance(
+        preset,
+        season_key,
+        class_name,
+        background_source,
+        asset_key,
+        bc,
+        tc,
+        front_layout=None,
+        back_layout=None,
+        update_layout_images=False,
+    )
+
+
+def set_class_appearance(
+    preset: Optional[Preset],
+    season_key: Optional[str],
+    class_name: Optional[str],
+    background_source: str,
+    asset_key: str,
+    bc: str,
+    tc: str,
+    front_layout: Any,
+    back_layout: Any,
+):
+    return _set_class_appearance(
+        preset,
+        season_key,
+        class_name,
+        background_source,
+        asset_key,
+        bc,
+        tc,
+        front_layout=front_layout,
+        back_layout=back_layout,
+        update_layout_images=True,
+    )
+
+
+def set_class_layout_images(
+    preset: Optional[Preset],
+    season_key: Optional[str],
+    class_name: Optional[str],
+    background_source: str,
+    asset_key: str,
+    bc: str,
+    tc: str,
+    front_layout: Any,
+    back_layout: Any,
+):
     preset = _preset(preset)
     if not season_key or not class_name:
         gr.Info("Select a season and class first.")
         status, signs, config = panel_outputs(preset)
-        return preset, status, signs, config
+        return preset, _class_next_button(preset), status, signs, config
 
-    preset.seasons.setdefault(season_key, {"display": season_key})[class_name] = [rgba_to_hex(bc), rgba_to_hex(tc)]
+    source = _normalize_background_source(background_source)
+    if source != BACKGROUND_SOURCE_LAYOUT:
+        status, signs, config = panel_outputs(preset)
+        return preset, _class_next_button(preset), status, signs, config
+
+    token, _, source_text_color = _layout_asset_selection(asset_key)
+    if token is None:
+        gr.Info("Layout asset key must use only A-Z, a-z, 0-9, _ or -.")
+        status, signs, config = panel_outputs(preset)
+        return preset, _class_next_button(preset), status, signs, config
+
+    text_color = source_text_color or _normalize_color(tc, "#000000")
+    asset = preset.assets.layout_assets.setdefault(token, PresetLayoutAsset())
+    front_image = _image_value(front_layout)
+    back_image = _image_value(back_layout)
+    if front_image is not None:
+        asset.front = front_image
+    if back_image is not None:
+        asset.back = back_image
+
+    preset.seasons.setdefault(season_key, {"display": season_key})[class_name] = [token, text_color]
     status, signs, config = panel_outputs(preset)
-    return preset, status, signs, config
+    return preset, _class_next_button(preset), status, signs, config
+
+
+def _set_class_appearance(
+    preset: Optional[Preset],
+    season_key: Optional[str],
+    class_name: Optional[str],
+    background_source: str,
+    asset_key: str,
+    bc: str,
+    tc: str,
+    front_layout: Any,
+    back_layout: Any,
+    update_layout_images: bool,
+):
+    preset = _preset(preset)
+    if not season_key or not class_name:
+        gr.Info("Select a season and class first.")
+        status, signs, config = panel_outputs(preset)
+        source = _normalize_background_source(background_source)
+        return _class_appearance_outputs(preset, source, bc, asset_key, None, None, tc, status, signs, config)
+
+    source = _normalize_background_source(background_source)
+    selected_asset_value = asset_key
+    text_color = _normalize_color(tc, "#000000")
+    background_color = _normalize_color(bc, "#FFFFFF")
+
+    if source == BACKGROUND_SOURCE_CHOOSE:
+        token = "@choose"
+        text_color = "#000000"
+    elif source == BACKGROUND_SOURCE_LAYOUT:
+        token, source_asset, source_text_color = _layout_asset_selection(asset_key)
+        if token is None:
+            gr.Info("Layout asset key must use only A-Z, a-z, 0-9, _ or -.")
+            source, background_color, token, front_layout, back_layout, text_color = _class_appearance(
+                preset,
+                season_key,
+                class_name,
+            )
+            status, signs, config = panel_outputs(preset)
+            return _class_appearance_outputs(
+                preset,
+                source,
+                background_color,
+                token,
+                front_layout,
+                back_layout,
+                text_color,
+                status,
+                signs,
+                config,
+            )
+
+        asset = preset.assets.layout_assets.setdefault(token, PresetLayoutAsset())
+        if source_asset is not None:
+            asset.front = source_asset.front
+            asset.back = source_asset.back
+            text_color = source_text_color or "#000000"
+            selected_asset_value = str(asset_key).strip()
+        else:
+            selected_asset_value = token
+        if update_layout_images:
+            front_image = _image_value(front_layout)
+            back_image = _image_value(back_layout)
+            if front_image is not None:
+                asset.front = front_image
+            if back_image is not None:
+                asset.back = back_image
+        front_layout = asset.front
+        back_layout = asset.back
+    else:
+        token = background_color
+
+    preset.seasons.setdefault(season_key, {"display": season_key})[class_name] = [token, text_color]
+
+    status, signs, config = panel_outputs(preset)
+    return _class_appearance_outputs(preset, source, background_color, selected_asset_value, front_layout, back_layout, text_color, status, signs, config)
 
 
 def select_sign_member(preset: Optional[Preset], member_name: Optional[str]):
@@ -387,23 +632,9 @@ def _load_no_update(current: Optional[Preset]):
     status, signs, config = panel_outputs(preset)
     return (
         preset,
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
-        gr.update(),
+        *[gr.update() for _ in range(23)],
         _artist_next_button(preset),
+        _class_next_button(preset),
         status,
         signs,
         config,
@@ -420,6 +651,11 @@ def _artist_next_button(preset: Preset) -> gr.Button:
     return gr.Button(interactive=ready, variant="primary" if ready else "secondary")
 
 
+def _class_next_button(preset: Preset) -> gr.Button:
+    ready = preset.all_seasons_have_class() and not preset.layout_asset_errors()
+    return gr.Button(interactive=ready, variant="primary" if ready else "secondary")
+
+
 def _season_displays(preset: Preset) -> list[str]:
     return [season.get("display", key) for key, season in preset.seasons.items()]
 
@@ -431,13 +667,185 @@ def _classes_for_season(preset: Preset, season_key: Optional[str]) -> list[str]:
     return [key for key in season.keys() if key != "display"]
 
 
-def _class_colors(preset: Preset, season_key: Optional[str], class_name: Optional[str]) -> tuple[str, str]:
+def _class_appearance(
+    preset: Preset,
+    season_key: Optional[str],
+    class_name: Optional[str],
+) -> tuple[str, str, str, Optional[Image.Image], Optional[Image.Image], str]:
+    default_asset_key = layout_asset_dropdown_value(preset) or ""
     if not season_key or not class_name:
-        return "#FFFFFF", "#000000"
+        return BACKGROUND_SOURCE_STATIC, "#FFFFFF", default_asset_key, None, None, "#000000"
+
     value = preset.seasons.get(season_key, {}).get(class_name)
     if not isinstance(value, list) or len(value) < 2:
-        return "#FFFFFF", "#000000"
-    return value[0], value[1]
+        return BACKGROUND_SOURCE_STATIC, "#FFFFFF", default_asset_key, None, None, "#000000"
+
+    token = str(value[0]).strip()
+    text_color = _normalize_color(value[1], "#000000")
+    if token.startswith("#"):
+        return BACKGROUND_SOURCE_STATIC, _normalize_color(token, "#FFFFFF"), default_asset_key, None, None, text_color
+    if token == "@choose":
+        return BACKGROUND_SOURCE_CHOOSE, "#FFFFFF", default_asset_key, None, None, text_color
+
+    asset_key = token if token else default_asset_key
+    asset = preset.assets.layout_assets.get(asset_key)
+    return (
+        BACKGROUND_SOURCE_LAYOUT,
+        "#FFFFFF",
+        asset_key,
+        asset.front if asset else None,
+        asset.back if asset else None,
+        text_color,
+    )
+
+
+def _class_appearance_outputs(
+    preset: Preset,
+    background_source: str,
+    bc: str,
+    asset_key: Optional[str],
+    front_layout: Optional[Image.Image],
+    back_layout: Optional[Image.Image],
+    tc: str,
+    status: gr.Markdown,
+    signs: gr.Dataframe,
+    config: gr.JSON,
+):
+    source = _normalize_background_source(background_source)
+    choices = layout_asset_dropdown_choices(preset)
+    selected_asset_key = asset_key if _valid_layout_asset_selection(asset_key) else layout_asset_dropdown_value(preset)
+    return (
+        preset,
+        gr.Radio(choices=BACKGROUND_SOURCE_CHOICES, value=source),
+        gr.ColorPicker(value=_normalize_color(bc, "#FFFFFF"), visible=source == BACKGROUND_SOURCE_STATIC),
+        gr.Group(visible=source == BACKGROUND_SOURCE_LAYOUT),
+        gr.Dropdown(choices=choices, value=selected_asset_key, allow_custom_value=True),
+        gr.Image(value=front_layout, visible=True),
+        gr.Image(value=back_layout, visible=True),
+        gr.ColorPicker(value=_normalize_color(tc, "#000000"), visible=source == BACKGROUND_SOURCE_STATIC),
+        _class_next_button(preset),
+        status,
+        signs,
+        config,
+    )
+
+
+def _default_class_spec(background_source: str, asset_key: str, bc: str, tc: str) -> tuple[str, str]:
+    source = _normalize_background_source(background_source)
+    text_color = _normalize_color(tc, "#000000")
+    if source == BACKGROUND_SOURCE_CHOOSE:
+        return "@choose", "#000000"
+    if source == BACKGROUND_SOURCE_LAYOUT:
+        token, _, source_text_color = _layout_asset_selection(asset_key)
+        return token or "", source_text_color or "#000000"
+    return _normalize_color(bc, "#FFFFFF"), text_color
+
+
+def _normalize_background_source(value: str) -> str:
+    return value if value in BACKGROUND_SOURCE_CHOICES else BACKGROUND_SOURCE_STATIC
+
+
+def _valid_layout_asset_selection(value: Any) -> bool:
+    token, _, _ = _layout_asset_selection(value)
+    return token is not None
+
+
+def _layout_asset_selection(value: Any) -> tuple[Optional[str], Optional[PresetLayoutAsset], Optional[str]]:
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        return None, None, None
+
+    normalized = raw_value.replace("\\", "/")
+    parts = normalized.split("/")
+    if len(parts) == 2:
+        artist_name, asset_key = parts
+        if not _is_safe_path_name(artist_name) or not is_valid_layout_asset_key(asset_key):
+            return None, None, None
+        source_asset = _load_layout_asset_source(artist_name, asset_key)
+        if source_asset is None:
+            return None, None, None
+        return asset_key, source_asset, _layout_asset_text_color(artist_name, asset_key)
+
+    if len(parts) != 1:
+        return None, None, None
+
+    asset_key = parts[0]
+    if not is_valid_layout_asset_key(asset_key):
+        return None, None, None
+    return asset_key, None, None
+
+
+def _available_layout_asset_sources() -> list[str]:
+    sources = []
+    if not ARTIST_DIR.exists():
+        return sources
+    for artist_dir in sorted([path for path in ARTIST_DIR.iterdir() if path.is_dir()], key=lambda path: path.name.lower()):
+        for asset_dir in sorted([path for path in artist_dir.iterdir() if path.is_dir()], key=lambda path: path.name.lower()):
+            if (asset_dir / "front.png").exists() and (asset_dir / "back.png").exists():
+                sources.append(f"{artist_dir.name}/{asset_dir.name}")
+    return sources
+
+
+def _load_layout_asset_source(artist_name: str, asset_key: str) -> Optional[PresetLayoutAsset]:
+    source_path = ARTIST_DIR / artist_name / asset_key
+    front = _open_rgba(source_path / "front.png")
+    back = _open_rgba(source_path / "back.png")
+    if front is None or back is None:
+        return None
+    return PresetLayoutAsset(front=front, back=back)
+
+
+def _layout_asset_text_color(artist_name: str, asset_key: str) -> Optional[str]:
+    config_path = ARTIST_DIR / artist_name / "config.json"
+    if not config_path.exists():
+        return None
+    try:
+        with config_path.open("r", encoding="utf-8") as file:
+            config = json.load(file)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    for season in (config.get("seasons") or {}).values():
+        if not isinstance(season, dict):
+            continue
+        for class_name, color_spec in season.items():
+            if class_name == "display":
+                continue
+            if isinstance(color_spec, (list, tuple)) and len(color_spec) >= 2 and str(color_spec[0]) == asset_key:
+                return _normalize_color(color_spec[1], "#000000")
+    return None
+
+
+def _is_safe_path_name(value: str) -> bool:
+    return bool(value) and value not in {".", ".."} and "/" not in value and "\\" not in value
+
+
+def _normalize_color(value: Any, default: str) -> str:
+    if not value:
+        return default
+    try:
+        return rgba_to_hex(str(value))
+    except (TypeError, ValueError):
+        return default
+
+
+def _image_value(value: Any) -> Optional[Image.Image]:
+    if value is None:
+        return None
+    if isinstance(value, Image.Image):
+        return value.convert("RGBA").copy()
+    path = _path_value(value)
+    if not path:
+        return None
+    with Image.open(path) as image:
+        return image.convert("RGBA").copy()
+
+
+def _open_rgba(path: Path) -> Optional[Image.Image]:
+    if not path.exists():
+        return None
+    with Image.open(path) as image:
+        return image.convert("RGBA").copy()
 
 
 def _default_colors(preset: Preset) -> tuple[str, str]:

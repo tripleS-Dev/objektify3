@@ -66,7 +66,7 @@ def others(image_box):
                         btn2 = gr.Button("Next", interactive=False, variant="secondary")
                         btn2.click(lambda: gr.Walkthrough(selected=3), outputs=walkthrough)
 
-                    with gr.Step("Class", id=3) as by_season:
+                    with gr.Step("Season Colors", id=3):
                         seasons_select = gr.Radio(
                             choices=[],
                             interactive=True,
@@ -88,6 +88,13 @@ def others(image_box):
                                 interactive=True,
                             )
 
+                        background_source = gr.Radio(
+                            choices=pc.BACKGROUND_SOURCE_CHOICES,
+                            value=pc.BACKGROUND_SOURCE_STATIC,
+                            label="Background Source",
+                            interactive=True,
+                        )
+
                         with gr.Row(equal_height=True):
                             bc = gr.ColorPicker(
                                 label="Background Color",
@@ -103,6 +110,36 @@ def others(image_box):
                                 value="#000000",
                                 min_width=260,
                             )
+
+                        with gr.Group(visible=False) as layout_asset_group:
+                            layout_asset_key = gr.Dropdown(
+                                choices=pc.layout_asset_dropdown_choices(),
+                                value=pc.layout_asset_dropdown_value(),
+                                allow_custom_value=True,
+                                label="Layout Asset",
+                                interactive=True,
+                            )
+                            with gr.Row(equal_height=True):
+                                layout_front = gr.Image(
+                                    label="Front Layout",
+                                    type="pil",
+                                    image_mode='RGBA',
+                                    sources="upload",
+                                    interactive=True,
+                                    height=180,
+                                    buttons=None,
+                                    visible=True,
+                                )
+                                layout_back = gr.Image(
+                                    label="Back Layout",
+                                    type="pil",
+                                    image_mode='RGBA',
+                                    sources="upload",
+                                    interactive=True,
+                                    height=180,
+                                    buttons=None,
+                                    visible=True,
+                                )
 
                         btn3 = gr.Button("Next", interactive=False, variant="secondary")
                         btn3.click(lambda: gr.Walkthrough(selected=4), outputs=walkthrough)
@@ -314,6 +351,13 @@ def others(image_box):
                 seasons_select,
                 class_name,
                 class_select,
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
                 members_radio,
                 creator_name,
                 discord_id,
@@ -325,6 +369,7 @@ def others(image_box):
                 side_logo_preview,
                 default_img_preview,
                 btn1,
+                btn3,
                 status_panel,
                 sign_status,
                 debug_config,
@@ -343,6 +388,13 @@ def others(image_box):
                 seasons_select,
                 class_name,
                 class_select,
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
                 members_radio,
                 creator_name,
                 discord_id,
@@ -354,6 +406,7 @@ def others(image_box):
                 side_logo_preview,
                 default_img_preview,
                 btn1,
+                btn3,
                 status_panel,
                 sign_status,
                 debug_config,
@@ -375,29 +428,122 @@ def others(image_box):
         add_seasons.change(
             fn=pc.set_seasons,
             inputs=[preset_state, add_seasons],
-            outputs=[preset_state, btn2, seasons_select, class_name, class_select, status_panel, sign_status, debug_config],
+            outputs=[
+                preset_state,
+                btn2,
+                seasons_select,
+                class_name,
+                class_select,
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
+                btn3,
+                status_panel,
+                sign_status,
+                debug_config,
+            ],
         )
 
         seasons_select.select(
             fn=pc.select_season,
             inputs=[preset_state, seasons_select],
-            outputs=[class_name, class_select, bc, tc],
+            outputs=[
+                class_name,
+                class_select,
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
+            ],
         )
         class_name.change(
             fn=pc.set_classes,
-            inputs=[preset_state, seasons_select, class_name, bc, tc],
-            outputs=[preset_state, class_select, btn3, status_panel, sign_status, debug_config],
+            inputs=[preset_state, seasons_select, class_name, background_source, layout_asset_key, bc, tc],
+            outputs=[
+                preset_state,
+                class_select,
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
+                btn3,
+                status_panel,
+                sign_status,
+                debug_config,
+            ],
         )
         class_select.input(
             fn=pc.select_class,
             inputs=[preset_state, seasons_select, class_select],
-            outputs=[bc, tc],
+            outputs=[
+                background_source,
+                bc,
+                layout_asset_group,
+                layout_asset_key,
+                layout_front,
+                layout_back,
+                tc,
+            ],
         )
-        for colorpicker in [bc, tc]:
-            colorpicker.release(
-                fn=pc.set_class_color,
-                inputs=[preset_state, seasons_select, class_select, bc, tc],
-                outputs=[preset_state, status_panel, sign_status, debug_config],
+        for source_component in [background_source, layout_asset_key]:
+            source_component.change(
+                fn=pc.set_class_source,
+                inputs=[preset_state, seasons_select, class_select, background_source, layout_asset_key, bc, tc],
+                outputs=[
+                    preset_state,
+                    background_source,
+                    bc,
+                    layout_asset_group,
+                    layout_asset_key,
+                    layout_front,
+                    layout_back,
+                    tc,
+                    btn3,
+                    status_panel,
+                    sign_status,
+                    debug_config,
+                ],
+            )
+        for appearance_component in [bc, tc]:
+            appearance_component.release(
+                fn=pc.set_class_appearance,
+                inputs=[preset_state, seasons_select, class_select, background_source, layout_asset_key, bc, tc, layout_front, layout_back],
+                outputs=[
+                    preset_state,
+                    background_source,
+                    bc,
+                    layout_asset_group,
+                    layout_asset_key,
+                    layout_front,
+                    layout_back,
+                    tc,
+                    btn3,
+                    status_panel,
+                    sign_status,
+                    debug_config,
+                ],
+            )
+        for layout_component in [layout_front, layout_back]:
+            layout_component.change(
+                fn=pc.set_class_layout_images,
+                inputs=[preset_state, seasons_select, class_select, background_source, layout_asset_key, bc, tc, layout_front, layout_back],
+                outputs=[
+                    preset_state,
+                    btn3,
+                    status_panel,
+                    sign_status,
+                    debug_config,
+                ],
             )
 
         members_radio.select(
